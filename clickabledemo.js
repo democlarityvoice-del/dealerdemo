@@ -1559,6 +1559,10 @@ function buildInboundHTML(from, dateText, toText, durText, releaseText, agentExt
     var tailMs = isNaN(secs) ? (1*60 + 59)*1000 : Math.max(0, (secs - 6)*1000);
     var t3 = addMs(t2, tailMs);
 
+    // NEW: who is placing the outbound call (name + ext if possible)
+    var ext = String(agentExt || extractAnyExt(from) || '').replace(/\D/g,'');
+    var callerLabel = ext ? findAgentLabel(ext) : (String(from || '').trim() || 'Agent'); 
+
     var answeredWho = dialed ? ('Call answered by ' + dialed) : 'Call answered';
     var hangLabel   = agentExt ? ('Ext. ' + agentExt) : (String(from||'').trim() || 'Caller');
     var hangWho     = hangLabel + ' hung up';
@@ -1786,7 +1790,6 @@ try {
 } catch(e) {
   console.error('[AI Modal] Failed to extract AIDate:', e);
 }
-
 
 
 
