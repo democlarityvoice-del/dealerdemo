@@ -1459,9 +1459,9 @@ function buildInboundHTML(from, dateText, toText, durText, releaseText, agentExt
   var start = parseStart(dateText);
 
   // Labels you asked for
-  var timeframe = 'Daytime';
+  var timeframe = 'During Hours';
   var aaLabel   = 'Auto Attendant Daytime 700';
-  var queueLbl  = 'Call Queue 301';
+  var queueLbl  = 'Call Queue 300';
 
   // Who answered (use the “To” ext if present)
   var answeredExt   = String(agentExt || extractAnyExt(toText) || extractAnyExt(from) || '');
