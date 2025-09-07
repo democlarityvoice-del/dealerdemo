@@ -1459,7 +1459,7 @@ function buildInboundHTML(from, dateText, toText, durText, releaseText, agentExt
   var start = parseStart(dateText);
 
   // Labels you asked for
-  var timeframe = 'During Hours';
+  var timeframe = 'Daytime';
   var aaLabel   = 'Auto Attendant Daytime 700';
   var queueLbl  = 'Call Queue 300';
 
