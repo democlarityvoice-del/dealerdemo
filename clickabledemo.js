@@ -1398,20 +1398,22 @@ var iconsHTML = ICONS.map(function(icon){
 // 1x1 transparent for “plain circle” steps
 var ICON_DOT = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-// Agent directory (ext → name)
+// Agent directory (ext → name) — DealerDemo
 var AGENTS = [
-  {ext:'200', name:'Mike Johnson'},
-  {ext:'201', name:'Cathy Thomas'},
-  {ext:'202', name:'Jake Lee'},
-  {ext:'203', name:'Bob Andersen'},
-  {ext:'204', name:'Brittany Lawrence'},
-  {ext:'205', name:'Alex Roberts'},
-  {ext:'206', name:'Mark Sanchez'},
-  {ext:'207', name:'John Smith'},
-  {ext:'208', name:'Emily Johnson'},
-  {ext:'209', name:'Michael Williams'},
-  {ext:'210', name:'Jessica Brown'}
+  {ext:'200', name:'Abbey Palmer'},
+  {ext:'201', name:'Emma Johnson'},
+  {ext:'202', name:'Liam Turner'},
+  {ext:'210', name:'Mike Jones'},
+  {ext:'211', name:'Chad Sanders'},
+  {ext:'212', name:'Isabella Martinez'},
+  {ext:'220', name:'Bob Smith'},
+  {ext:'221', name:'Ethan Moore'},
+  {ext:'222', name:'Amelia Lee'},
+  {ext:'230', name:'Sophia Anderson'},
+  {ext:'231', name:'Evelyn Lewis'},
+  {ext:'240', name:'Dave Walker'}
 ];
+
 
 // More forgiving ext extractor: "Ext. 206", "(266p)", "266p", "x206"
 function extractAnyExt(text){
@@ -1623,11 +1625,24 @@ document.addEventListener('click', function (e) {
   if (document._cvNotesBound) return;
   document._cvNotesBound = true;
 
-  // Disposition -> Reason options (exact strings requested)
-  var NOTES_REASONS = {
-    'Inbound Sales' : ['Existing customer question', 'Follow up', 'Referral'],
-    'Outbound Sales': ['Cold Call', 'Follow-up']
-  };
+// Disposition -> Reason options (exact strings requested)
+var NOTES_REASONS = {
+  'Inbound Sales': [
+    'Existing customer question',
+    'Follow up',
+    'Referral',
+    'Parts',
+    'Service',
+    'Finance'
+  ],
+  'Outbound Sales': [
+    'Cold Call',
+    'Follow-up',
+    'Marketing',
+    'Online Callback'
+  ]
+};
+
 
   // Ensure a modal exists (uses the same .cv-modal styles you already have)
   function ensureNotesModal () {
