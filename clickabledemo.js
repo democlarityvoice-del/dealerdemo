@@ -1549,37 +1549,44 @@ function buildInboundHTML(from, dateText, toText, durText, releaseText, agentExt
 
 
 
-  // ----- Outbound builder (self-contained) -----
-  function buildOutboundHTML(from, dateText, dialed, durText, agentExt){
-    var start = parseStart(dateText);
-    var t0 = start;
-    var t1 = addMs(start, 303);
-    var t2 = addMs(start, 6000);
-    var secs   = parseDurSecs(durText);
-    var tailMs = isNaN(secs) ? (1*60 + 59)*1000 : Math.max(0, (secs - 6)*1000);
-    var t3 = addMs(t2, tailMs);
+// ----- Outbound builder (shows agent name + ext on first line) -----
+function buildOutboundHTML(from, dateText, dialed, durText, agentExt){
+  var start = parseStart(dateText);
+  var t0 = start;
+  var t1 = addMs(start, 303);
+  var t2 = addMs(start, 6000);
 
-    // NEW: who is placing the outbound call (name + ext if possible)
-    var ext = String(agentExt || extractAnyExt(from) || '').replace(/\D/g,'');
-    var callerLabel = ext ? findAgentLabel(ext) : (String(from || '').trim() || 'Agent'); 
+  var secs   = parseDurSecs(durText);
+  var tailMs = isNaN(secs) ? (1*60 + 59)*1000 : Math.max(0, (secs - 6)*1000);
+  var t3 = addMs(t2, tailMs);
 
-    var answeredWho = dialed ? ('Call answered by ' + dialed) : 'Call answered';
-    var hangLabel   = agentExt ? ('Ext. ' + agentExt) : (String(from||'').trim() || 'Caller');
-    var hangWho     = hangLabel + ' hung up';
+  // NEW: who is placing the outbound call (name + ext if possible)
+  var ext = String(agentExt || extractAnyExt(from) || '').replace(/\D/g,'');
+  var callerLabel = ext ? findAgentLabel(ext) : (String(from || '').trim() || 'Agent'); 
+  // findAgentLabel(ext) -> "Name (ext)" or "Ext. ###" fallback
 
-    return ''
-      + '<div class="cvctg-steps" style="padding:8px 6px 2px">'
-      +   timeBlock(t0, '',        ICON_RING,   (dialed ? (dialed + ' is ringing') : 'Ringing'))
-      +   timeBlock(t1, '+303ms',  ICON_RING,   (dialed ? (dialed + ' is ringing') : 'Ringing'))
-      +   timeBlock(t2, '+6s',     ICON_ANSWER, answeredWho)
-      +   timeBlock(
-            t3,
-            (isNaN(secs) ? '+1m 59s' : (secs >= 6 ? ('+' + Math.floor((secs-6)/60) + 'm ' + ((secs-6)%60) + 's') : '+0s')),
-            ICON_HANG,
-            hangWho
-          )
-      + '</div>';
-  }
+  var answeredWho = dialed ? ('Call answered by ' + dialed) : 'Call answered';
+  var hangLabel   = ext ? ('Ext. ' + ext) : (String(from||'').trim() || 'Caller');
+  var hangWho     = hangLabel + ' hung up';
+
+  return ''
+    + '<div class="cvctg-steps" style="padding:8px 6px 2px">'
+    // 1) First line: "Call from {Name (Ext)} to {Dialed}"
+    +   timeBlock(t0, '',        ICON_RING,   'Call from ' + callerLabel + ' to ' + (dialed || ''))
+    // 2) Second line (unchanged): "{Dialed} is ringing"
+    +   timeBlock(t1, '+303ms',  ICON_RING,   (dialed ? (dialed + ' is ringing') : 'Ringing'))
+    // 3) Answered by {dialed}
+    +   timeBlock(t2, '+6s',     ICON_ANSWER, answeredWho)
+    // 4) Hangup with duration
+    +   timeBlock(
+          t3,
+          (isNaN(secs) ? '+1m 59s' : (secs >= 6 ? ('+' + Math.floor((secs-6)/60) + 'm ' + ((secs-6)%60) + 's') : '+0s')),
+          ICON_HANG,
+          hangWho
+        )
+    + '</div>';
+}
+
 
 
 
