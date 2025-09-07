@@ -1134,7 +1134,7 @@ function extractExt(text){
 // ---- STATIC SNAPSHOT (25 rows) — DealerDemo mapped ----
 const rows = [
   { cnam:"Ruby Foster",  from:"(248) 555-0102", q1:"4.5", dialed:"248-436-3443",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.5", date:"Today, 10:02 pm", duration:"0:56",
+    toName:"", to:"Ext. 202", q2:"4.5", date:"Today, 10:02 pm", duration:"0:56",
     disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Ethan Moore",  from:"221", q1:"4.4", dialed:"(517) 555-0162",
@@ -1142,11 +1142,11 @@ const rows = [
     duration:"1:53", disposition:"", release:"Term: Bye", ctgType:"outbound" },
 
   { cnam:"Leo Knight",   from:"(313) 555-0106", q1:"4.3", dialed:"313-995-9080",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.4", date:"Today, 9:57 pm",
+    toName:"", to:"Ext. 202", q2:"4.4", date:"Today, 9:57 pm",
     duration:"1:53", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Ava Chen",     from:"(313) 555-0151", q1:"4.4", dialed:"248-436-3449",
-    toName:"Emma Johnson", to:"Ext. 201", q2:"4.3", date:"Today, 9:55 pm",
+    toName:"", to:"Ext. 201", q2:"4.3", date:"Today, 9:55 pm",
     duration:"0:56", disposition:"", release:"Term: Bye", ctgType:"inbound" },
 
   { cnam:"Isabella Martinez", from:"212", q1:"4.5", dialed:"(248) 555-0110",
@@ -1154,43 +1154,43 @@ const rows = [
     duration:"2:36", disposition:"", release:"Orig: Bye", ctgType:"outbound" },
 
   { cnam:"Zoe Miller",   from:"(248) 555-0165", q1:"4.2", dialed:"248-436-3443",
-    toName:"Emma Johnson", to:"Ext. 201", q2:"4.3", date:"Today, 9:51 pm",
+    toName:"", to:"Ext. 201", q2:"4.3", date:"Today, 9:51 pm",
     duration:"9:58", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Raj Patel",    from:"(810) 555-0187", q1:"4.3", dialed:"313-995-9080",
-    toName:"Abbey Palmer", to:"Ext. 200", q2:"4.2", date:"Today, 9:49 pm",
+    toName:"", to:"Ext. 200", q2:"4.2", date:"Today, 9:49 pm",
     duration:"4:49", disposition:"", release:"Term: Bye", ctgType:"inbound" },
 
   { cnam:"Zoe Miller",   from:"(810) 555-0184", q1:"4.4", dialed:"248-436-3449",
-    toName:"Abbey Palmer", to:"Ext. 200", q2:"4.4", date:"Today, 9:47 pm",
+    toName:"", to:"Ext. 200", q2:"4.4", date:"Today, 9:47 pm",
     duration:"13:01", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Tucker Jones", from:"(989) 555-0128", q1:"4.5", dialed:"248-436-3443",
-    toName:"Emma Johnson", to:"Ext. 201", q2:"4.4", date:"Today, 9:45 pm",
+    toName:"", to:"Ext. 201", q2:"4.4", date:"Today, 9:45 pm",
     duration:"32:06", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Liam Nguyen",  from:"(810) 555-0100", q1:"4.2", dialed:"313-995-9080",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.3", date:"Today, 9:43 pm",
+    toName:"", to:"Ext. 202", q2:"4.3", date:"Today, 9:43 pm",
     duration:"1:28", disposition:"", release:"Term: Bye", ctgType:"inbound" },
 
   { cnam:"Ava Chen",     from:"(313) 555-0108", q1:"4.3", dialed:"248-436-3449",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.5", date:"Today, 9:41 pm",
+    toName:"", to:"Ext. 202", q2:"4.5", date:"Today, 9:41 pm",
     duration:"15:51", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Maya Brooks",  from:"(517) 555-0126", q1:"4.4", dialed:"248-436-3443",
-    toName:"Abbey Palmer", to:"Ext. 200", q2:"4.2", date:"Today, 9:39 pm",
+    toName:"", to:"Ext. 200", q2:"4.2", date:"Today, 9:39 pm",
     duration:"14:27", disposition:"", release:"Term: Bye", ctgType:"inbound" },
 
   { cnam:"Jack Burton",  from:"(517) 555-0148", q1:"4.3", dialed:"313-995-9080",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.3", date:"Today, 9:37 pm",
+    toName:"", to:"Ext. 202", q2:"4.3", date:"Today, 9:37 pm",
     duration:"14:28", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Zoe Miller",   from:"(248) 555-0168", q1:"4.4", dialed:"248-436-3449",
-    toName:"Emma Johnson", to:"Ext. 201", q2:"4.4", date:"Today, 9:34 pm",
+    toName:"", to:"Ext. 201", q2:"4.4", date:"Today, 9:34 pm",
     duration:"20:45", disposition:"", release:"Term: Bye", ctgType:"inbound" },
 
   { cnam:"Sarah Patel",  from:"(248) 555-0196", q1:"4.2", dialed:"248-436-3443",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.5", date:"Today, 9:32 pm",
+    toName:"", to:"Ext. 202", q2:"4.5", date:"Today, 9:32 pm",
     duration:"12:05", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Liam Turner",  from:"202", q1:"4.5", dialed:"(248) 555-0191",
@@ -1198,7 +1198,7 @@ const rows = [
     duration:"27:22", disposition:"", release:"Orig: Bye", ctgType:"outbound" },
 
   { cnam:"Chloe Bennett",from:"(313) 555-0120", q1:"4.3", dialed:"313-995-9080",
-    toName:"Emma Johnson", to:"Ext. 201", q2:"4.2", date:"Today, 9:28 pm",
+    toName:"", to:"Ext. 201", q2:"4.2", date:"Today, 9:28 pm",
     duration:"22:17", disposition:"", release:"Term: Bye", ctgType:"inbound" },
 
   { cnam:"Abbey Palmer", from:"200", q1:"4.4", dialed:"(810) 555-0112",
@@ -1206,11 +1206,11 @@ const rows = [
     duration:"17:20", disposition:"", release:"Orig: Bye", ctgType:"outbound" },
 
   { cnam:"Carlos Rivera",from:"(517) 555-0177", q1:"4.5", dialed:"248-436-3449",
-    toName:"Emma Johnson", to:"Ext. 201", q2:"4.4", date:"Today, 9:24 pm",
+    toName:"", to:"Ext. 201", q2:"4.4", date:"Today, 9:24 pm",
     duration:"7:41", disposition:"", release:"Term: Bye", ctgType:"inbound" },
 
   { cnam:"Monica Alvarez",from:"(989) 555-0113", q1:"4.2", dialed:"248-436-3443",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.2", date:"Today, 9:21 pm",
+    toName:"", to:"Ext. 202", q2:"4.2", date:"Today, 9:21 pm",
     duration:"2:36", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Mike Jones",   from:"210", q1:"4.4", dialed:"(313) 555-0179",
@@ -1218,7 +1218,7 @@ const rows = [
     duration:"5:12", disposition:"", release:"Term: Bye", ctgType:"outbound" },
 
   { cnam:"Ruby Foster",  from:"(810) 555-0175", q1:"4.3", dialed:"313-995-9080",
-    toName:"Liam Turner", to:"Ext. 202", q2:"4.5", date:"Today, 9:17 pm",
+    toName:"", to:"Ext. 202", q2:"4.5", date:"Today, 9:17 pm",
     duration:"10:44", disposition:"", release:"Orig: Bye", ctgType:"inbound" },
 
   { cnam:"Bob Smith",    from:"220", q1:"4.5", dialed:"(989) 555-0140",
