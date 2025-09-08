@@ -2728,10 +2728,10 @@ if (!window.__cvQueuesTilesInit) {
 
   // ---- DECLARE CALL CENTER QUEUE DATA (demo counts) ----
   const QUEUE_DATA = [
-    { key:'main',     title:'Main Routing (300)',      active:0, waiting:0, timer:false, idle:7 },
-    { key:'sales',    title:'New Sales (301)',         active:3, waiting:2, timer:true,  idle:6 },
-    { key:'existing', title:'Existing Customer (302)', active:1, waiting:3, timer:true,  idle:4 },
-    { key:'billing',  title:'Billing (303)',           active:0, waiting:0, timer:false, idle:1 }
+    { key:'main',     title:'Operator Queue (300)',      active:0, waiting:0, timer:false, idle:7 },
+    { key:'sales',    title:'Service Queue (301)',         active:3, waiting:2, timer:true,  idle:6 },
+    { key:'existing', title:'Sales Queue (302)', active:1, waiting:3, timer:true,  idle:4 },
+    { key:'billing',  title:'Finance (303)',           active:0, waiting:0, timer:false, idle:1 }
   ];
 
   // ---- UTIL: CALL CENTER scheduleInject (safe RAF/timeout) ----
