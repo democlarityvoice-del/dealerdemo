@@ -4473,5 +4473,754 @@ if (!document.__cvqfRowStatusCapture) {
 
     if (MANAGER_REGEX.test(location.href)) inject();
   })();
+})();  /* ==== Ends The Call Center Home Page ===== */
+
+
+
+/* ==== CV Queue Stats: robust auto-discovery injector (patched for Main Routing modal) ===== */
+(() => {
+  if (window.__cvqs_auto_installed__) return;
+  window.__cvqs_auto_installed__ = true;
+
+  const LINK_CLASS = 'cvqs-poc-link';
+  const STATS_TABLE_ID = '#modal_stats_table';
+  const MAX_SCAN_TRIES = 20;
+
+  const queueRepDownload = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/download-solid-full.svg';
+  const queueRepListen = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/speakericon.svg';
+  const queueRepCradle = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/transcript.svg';
+  const queueRepNotes = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/newspaper-regular-full.svg';
+  const magnifyIcon = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/magnifying-glass-solid-full.svg';
+
+  const CVQ_DATA = {
+    "Main Routing":     { VOL: 5, CO: 5, ATT: "2:26", AH: "0:10", AC: null, AWT: "1:45" },
+    "New Sales":        { VOL: 21, CO: 10, ATT: "3:14", AH: "0:00", AC: null, AWT: "2:12" },
+    "Existing Customer":{ VOL: 5, CO: 5, ATT: "1:38", AH: "0:05", AC: null, AWT: "1:01" },
+    "Billing":          { VOL: 3, CO: 3, ATT: "2:00", AH: "0:00", AC: null, AWT: "1:33" },
+  };
+
+  const QUEUE_NAMES = Object.keys(CVQ_DATA);
+
+  const QUEUE_NUMBERS = {
+  "Main Routing": "300",
+  "New Sales": "301",
+  "Existing Customer": "302",
+  "Billing": "303"
+ };
+
+  // maps must exist before you assign into them
+// create (or reuse) the globals safely, then alias for local use
+window.CVQS_QUEUE_ROWS_BY_NUM  = window.CVQS_QUEUE_ROWS_BY_NUM  || {};
+window.CVQS_QUEUE_ROWS_BY_NAME = window.CVQS_QUEUE_ROWS_BY_NAME || {};
+const CVQS_QUEUE_ROWS_BY_NUM  = window.CVQS_QUEUE_ROWS_BY_NUM;
+const CVQS_QUEUE_ROWS_BY_NAME = window.CVQS_QUEUE_ROWS_BY_NAME;
+
+const keyNorm = s => (s || '').replace(/\s+/g,' ').trim().toLowerCase();
+
+
+  const HEADER_TO_STAT = {
+    'Call Volume': 'VOL',
+    'Calls Offered': 'CO',
+    'Calls Handled': 'CO',
+    'Avg. Talk Time': 'ATT',
+    'Average Talk Time': 'ATT',
+    'Avg. Hold Time': 'AH',
+    'Abandoned Calls': 'AC',
+    'Avg. Wait Time': 'AWT',
+    'Average Wait Time': 'AWT'
+  };
+
+  const STAT_DESCRIPTIONS = {
+    VOL: 'Number of calls originating through a Call Queue.\nIncludes answered calls, abandoned calls, forwards, and voicemail.',
+    CO: 'Number of calls answered by agent originating through a Call Queue.',
+    AH: 'Average time a caller spends on hold with an agent.\nExcludes waiting time in the Call Queue.',
+    AC: 'Number of calls that abandoned the queue before being offered to an agent.',
+    AWT: 'Average number of seconds a caller spent in the selected queue before being dispatched to an agent. If none selected, total for all queues will be displayed.'
+  };
+
+
+
+// --- Existing Customer (by number: 302) ---
+CVQS_QUEUE_ROWS_BY_NUM["302"] = [
+  `<tr><td>Today, 1:46 pm</td><td>Tucker Jones</td><td>(989) 555-0128</td><td>248-436-3443</td><td>6:17</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>1:28</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:41 pm</td><td>Liam Nguyen</td><td>(810) 555-0100</td><td>248-436-3449</td><td>5:29</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:06</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:37 pm</td><td>Maya Brooks</td><td>(517) 555-0126</td><td>248-436-3449</td><td>1:01</td><td>205</td><td>205</td><td>Alex Roberts</td><td>2:05</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:35 pm</td><td>Jack Burton</td><td>(517) 555-0148</td><td>(313) 995-9080</td><td>0:42</td><td>202</td><td>202</td><td>Jake Lee</td><td>7:22</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:35 pm</td><td>Sarah Patel</td><td>(248) 555-0196</td><td>248-436-3443</td><td>1:57</td><td>200</td><td>200</td><td>Mike Johnson</td><td>3:24</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`
+];
+CVQS_QUEUE_ROWS_BY_NAME[("Existing Customer")] = CVQS_QUEUE_ROWS_BY_NUM["302"];
+
+// --- Billing (by number: 303; change if needed) ---
+CVQS_QUEUE_ROWS_BY_NUM["303"] = [
+  `<tr><td>Today, 1:30 pm</td><td>Chloe Bennet</td><td>(313) 555-0120</td><td>248-436-3443</td><td>5:21</td><td>200</td><td>200</td><td>Mike Johnson</td><td>6:11</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 11:41 am</td><td>Elizabeth Li</td><td>(313) 555-8471</td><td>(313) 995-9080</td><td>1:23</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>2:17</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 09:56 am</td><td>Rory Davis</td><td>(313) 555-0179</td><td>(313) 995-9080</td><td>1:01</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:17</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`
+];
+CVQS_QUEUE_ROWS_BY_NAME[("Billing")] = CVQS_QUEUE_ROWS_BY_NUM["303"];
+
+// --- New Sales (assumed number: 301; change if needed) ---
+CVQS_QUEUE_ROWS_BY_NUM["301"] = [
+  `<tr><td>Today, 11:22 am</td><td>JR Knight</td><td>248-555-0144</td><td>248-436-3443</td><td>3:49</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:35</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 11:18 am</td><td>Sarah Patel</td><td>(248) 555-0196</td><td>(313) 995-9080</td><td>2:22</td><td>205</td><td>205</td><td>Alex Roberts</td><td>17:29</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 10:58 am</td><td>Lola Turner</td><td>517-555-0170</td><td>248-436-3449</td><td>4:47</td><td>202</td><td>202</td><td>Jake Lee</td><td>1:24</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 10:27 am</td><td>Ruby Foster</td><td>(248) 555-0102</td><td>248-436-3449</td><td>4:21</td><td>200</td><td>200</td><td>Mike Johnson</td><td>4:16</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 10:23 am</td><td>Monica Alvarez</td><td>(989) 555-0113</td><td>248-436-3443</td><td>2:49</td><td>200</td><td>200</td><td>Mike Johnson</td><td>1:52</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 09:56 am</td><td>Rory Davis</td><td>313-555-0179</td><td>(313) 995-9080</td><td>1:01</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:17</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 09:29 am</td><td>Tanya Roberts</td><td>313-555-3443</td><td>248-436-3443</td><td>3:47</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>0:57</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 08:42 am</td><td>Alexander Chen</td><td>(517) 555-0122</td><td>(313) 995-9080</td><td>4:24</td><td>205</td><td>205</td><td>Alex Roberts</td><td>7:42</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 08:16 am</td><td>Leif Hendricksen</td><td>517-555-0162</td><td>(313) 995-9080</td><td>8:17</td><td>200</td><td>200</td><td>Mike Johnson</td><td>2:27</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 08:08 am</td><td>Coco LaBelle</td><td>(989) 555-0672</td><td>248-436-3443</td><td>0:22</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>5:55</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+
+  `<tr><td>Today, 1:26 pm</td><td>Carlos Riviera</td><td>(517) 555-0177</td><td>248-436-3449</td><td>3:52</td><td>202</td><td>202</td><td>Jake Lee</td><td>1:53</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:24 pm</td><td>Martin Smith</td><td>800-909-5384</td><td>(313) 995-9080</td><td>4:11</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>4:22</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:21 pm</td><td>John Travers</td><td>810-555-0192</td><td>(313) 995-9080</td><td>2:27</td><td>203</td><td>203</td><td>Bob Andersen</td><td>9:41</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 12:06 pm</td><td>Thomas Lee</td><td>517-555-0157</td><td>248-436-3443</td><td>1:21</td><td>204</td><td>204</td><td>Brittany Lawrence</td><td>3:53</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 11:58 am</td><td>Freddie Travis</td><td>800-649-2907</td><td>(313) 995-9080</td><td>3:48</td><td>203</td><td>203</td><td>Bob Andersen</td><td>21:16</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 11:58 am</td><td>Mark Sanchez</td><td>989-555-0213</td><td>(313) 995-9080</td><td>4:29</td><td>202</td><td>202</td><td>Jake Lee</td><td>2:47</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+
+  // the 5 adjusted ones (with corrected extensions)
+  `<tr><td>Today, 2:28 pm</td><td>Noah James</td><td>(248) 555-0123</td><td>248-436-3442</td><td>1:13</td><td>214</td><td>210</td><td>Jessica Brown</td><td>4:02</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 2:19 pm</td><td>Camila Ortiz</td><td>(734) 555-0148</td><td>248-436-3445</td><td>0:57</td><td>209</td><td>209</td><td>Michael Williams</td><td>2:51</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 2:05 pm</td><td>Owen Patel</td><td>(586) 555-0162</td><td>(313) 995-9080</td><td>2:41</td><td>213</td><td>212</td><td>Sara Davis</td><td>6:33</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:59 pm</td><td>Harper Green</td><td>(947) 555-0179</td><td>248-436-3447</td><td>1:08</td><td>205</td><td>205</td><td>Alex Roberts</td><td>3:11</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:43 pm</td><td>Michael Chen</td><td>(313) 555-0195</td><td>248-436-3450</td><td>3:26</td><td>210</td><td>210</td><td>Jessica Brown</td><td>5:04</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`
+];
+CVQS_QUEUE_ROWS_BY_NAME[keyNorm("New Sales")] = CVQS_QUEUE_ROWS_BY_NUM["301"];
+
+  
+
+// Your current default five rows for everyone else
+const CVQS_DEFAULT_ROWS = [
+  `<tr><td>Today, 2:13 pm</td><td>Ruby Foster</td><td>(248) 555-0102</td><td>248-436-3443</td><td>1:22</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>14:28</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 2:06 pm</td><td>Leo Knight</td><td>(313) 555-0106</td><td>248-436-3449</td><td>2:49</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>0:59</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:58 pm</td><td>Ava Chen</td><td>(313) 555-0151</td><td>248-436-3443</td><td>1:01</td><td>205</td><td>205</td><td>Alex Roberts</td><td>5:22</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:54 pm</td><td>Zoe Miller</td><td>(248) 555-0165</td><td>(313) 995-9080</td><td>3:47</td><td>207</td><td>207</td><td>John Smith</td><td>3:16</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
+  `<tr><td>Today, 1:50 pm</td><td>Raj Patel</td><td>(810) 555-0187</td><td>(313) 995-9080</td><td>4:24</td><td>210</td><td>210</td><td>Jessica Brown</td><td>5:51</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`
+];
+
+
+  
+  const norm = s => (s || '').replace(/\s+/g, ' ').trim();
+  const LOG = (...a) => console.debug('[CV-QS]', ...a);
+
+
+function getRowsForQueue(queueNameOnly, queueNumber) {
+  const numKey = queueNumber == null ? '' : String(queueNumber).trim();
+  if (numKey && CVQS_QUEUE_ROWS_BY_NUM[numKey]) {
+    return CVQS_QUEUE_ROWS_BY_NUM[numKey].join('');
+  }
+  // Prefer O(1) lookup if you store normalized keys:
+  const nameKey = keyNorm(queueNameOnly);
+  if (CVQS_QUEUE_ROWS_BY_NAME[nameKey]) {
+    return CVQS_QUEUE_ROWS_BY_NAME[nameKey].join('');
+  }
+  // Fallback: scan if your BY_NAME keys aren’t normalized
+  const hit = Object.keys(CVQS_QUEUE_ROWS_BY_NAME).find(k => keyNorm(k) === nameKey);
+  return hit ? CVQS_QUEUE_ROWS_BY_NAME[hit].join('') : CVQS_DEFAULT_ROWS.join('');
+}
+
+  
+
+  function collectDocs(root, out = []) {
+    out.push(root);
+    root.querySelectorAll('iframe').forEach(f => {
+      try { if (f.contentDocument) collectDocs(f.contentDocument, out); } catch (_) {}
+    });
+    return out;
+  }
+
+  function candidateTables(doc) {
+    const direct = Array.from(doc.querySelectorAll(STATS_TABLE_ID));
+    if (direct.length) return direct;
+    return Array.from(doc.querySelectorAll('table')).filter(t => {
+      const ths = Array.from(t.querySelectorAll('thead th'));
+      const labels = ths.map(th => norm(th.textContent));
+      return labels.some(l => /call volume|calls handled|calls offered|wait time|talk time|abandon/i.test(l));
+    });
+  }
+
+  function mapHeaders(table) {
+    const ths = Array.from(table.querySelectorAll('thead th'));
+    const colMap = {};
+    ths.forEach((th, i) => {
+      const label = norm(th.textContent);
+      const code = HEADER_TO_STAT[label];
+      if (code) colMap[code] = i;
+    });
+    let nameIdx = ths.findIndex(th => /^name$/i.test(norm(th.textContent)));
+    if (nameIdx < 0) {
+      const rows = Array.from(table.tBodies[0]?.rows || []).slice(0, 12);
+      const counts = ths.map((_, idx) => {
+        let hits = 0;
+        rows.forEach(r => {
+          const txt = norm(r.cells[idx]?.textContent);
+          if (QUEUE_NAMES.includes(txt)) hits++;
+        });
+        return hits;
+      });
+      nameIdx = counts.indexOf(Math.max(...counts));
+      if (nameIdx < 0) nameIdx = 1;
+    }
+    return { colMap, nameIdx };
+  }
+
+  function getStatTitle(code) {
+    const titles = {
+      VOL: 'Call Volume',
+      CO: 'Calls Handled',
+      ATT: 'Average Talk Time',
+      AH: 'Average Hold Time',
+      AC: 'Abandoned Calls',
+      AWT: 'Average Wait Time'
+    };
+    return titles[code] || code;
+  }
+
+  function timeToSeconds(t) {
+    const parts = t.split(':').map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return null;
+  }
+
+
+  function setSort(td, code, v) {
+    const n = Number(v);
+    if (!Number.isNaN(n)) { td.setAttribute('data-order', String(n)); return; }
+    if (code === 'ATT' || code === 'AH' || code === 'AWT') {
+      const s = timeToSeconds(v);
+      if (s != null) td.setAttribute('data-order', String(s));
+    }
+  }
+
+  function linkify(td, queue, code, v) {
+  if (v == null) return;
+  if (td.querySelector(`a.${LINK_CLASS}`)) return;
+
+  const a = td.ownerDocument.createElement('a');
+  a.href = '#';
+  a.className = LINK_CLASS;
+  a.textContent = String(v);
+  a.style.fontWeight = 'bold';
+  a.style.textDecoration = 'underline';
+  a.style.cursor = 'pointer';
+
+a.addEventListener('click', e => {
+  e.preventDefault();
+
+  const row = td.closest('tr');
+
+  // Normalize helper already in your codebase
+  const getTxt = el => (el ? norm(el.textContent) : '');
+
+  // 1) Try to read from the clicked row's cells
+  const cells = Array.from(row?.cells || []);
+  const cellTexts = cells.map(c => getTxt(c));
+
+  // Heuristics: number is a cell of only digits (3+), name matches known queues
+  const numIdx  = cellTexts.findIndex(t => /^\d{3,}$/.test(t));
+  const nameIdx = cellTexts.findIndex(t => QUEUE_NAMES.includes(t));
+
+  let queueNumber   = numIdx  >= 0 ? cellTexts[numIdx]  : '';
+  let queueNameOnly = nameIdx >= 0 ? cellTexts[nameIdx] : (queue || '').trim();
+
+  // 2) If number still missing, try to parse "Name (123)" if that’s what `queue` is
+  if (!queueNumber && /\(\d+\)/.test(queue || '')) {
+    const m = (queue || '').match(/^(.+?)\s*\((\d+)\)\s*$/);
+    if (m) {
+      queueNameOnly = m[1].trim();
+      queueNumber   = m[2];
+    }
+  }
+
+  // 3) If number still missing, fall back to the map
+  if (!queueNumber && queueNameOnly) {
+    queueNumber = (QUEUE_NUMBERS && QUEUE_NUMBERS[queueNameOnly]) || '';
+  }
+
+  // Debug so you can see exactly what's happening
+  console.log('[CVQS click]',
+    { rowTexts: cellTexts, numIdx, nameIdx, queue, queueNameOnly, queueNumber, code });
+
+  openQueueModal(queueNameOnly, queueNumber, code);
+});
+;
+
+
+  td.replaceChildren(a);
+  setSort(td, code, v);
+}
+
+// ==== REPLACE BOTH FUNCTIONS WITH THIS VERSION ====
+
+function injectIcons(tr) {
+  // Use the pre-allocated action cell; fallback to create if missing
+  let td = tr.querySelector('td.cvqs-action-cell');
+  if (!td) {
+    td = document.createElement('td');
+    td.className = 'cvqs-action-cell';
+    tr.appendChild(td);
+  }
+
+  td.innerHTML = `
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Download" title="Download" data-icon="download">
+    <img src="${queueRepDownload}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Listen" title="Listen" data-icon="listen">
+    <img src="${queueRepListen}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Cradle to Grave" title="Cradle to Grave" data-icon="cradle">
+    <img src="${queueRepCradle}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Edit Notes" title="Edit Notes" data-icon="notes">
+    <img src="${queueRepNotes}" alt="">
+  </span>
+`;
+
+}
+
+
+function openQueueModal(queueNameOnly, queueNumber, code) {
+  const modal = document.createElement('div');  
+  modal.id = 'cvqs-inline-modal';
+  modal.style = `
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: white;
+    padding: 20px 20px 40px 20px;
+    z-index: 10;
+    border: none; box-shadow: none; border-radius: 0;
+    height: auto; max-height: none; min-height: 500px;
+    font-family: sans-serif;
+  `;
+  // INSERT THESE TWO LINES
+modal.style.maxHeight = 'calc(100vh - 32px)';
+modal.style.overflow  = 'auto';
+// ==== queueNotesPopover (anchored dropdown, unique IDs) ====
+const QN_REASONS = {
+  'Inbound Sales' : ['Existing customer question', 'Follow up', 'Referral'],
+  'Outbound Sales': ['Cold Call', 'Follow-up']
+};
+
+function openQueueNotesPopover(anchorEl, initial) {
+  // remove any existing popover
+  document.getElementById('queue-notes-popover')?.remove();
+
+  // build container
+  const pop = document.createElement('div');
+  pop.id = 'queue-notes-popover';
+  pop.setAttribute('role', 'dialog');
+  pop.setAttribute('aria-label', 'Queue Notes');
+  Object.assign(pop.style, {
+    position: 'fixed',            // anchor to viewport
+    top: '0px',
+    left: '0px',
+    width: '340px',
+    maxWidth: '92vw',
+    background: '#fff',
+    border: '1px solid #cfd3d7',
+    borderRadius: '8px',
+    boxShadow: '0 8px 24px rgba(0,0,0,.18)',
+    zIndex: '2147483647',         // above everything
+    padding: '12px',
+    visibility: 'hidden'          // position first, then show
+  });
+
+  // content (unique element IDs)
+  pop.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <strong style="font-size:14px">Notes</strong>
+      <button id="qn2-close" aria-label="Close" style="background:none;border:0;font-size:18px;cursor:pointer;line-height:1">&times;</button>
+    </div>
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:10px 12px;align-items:center">
+      <label for="qn2-disposition" style="justify-self:end;font-weight:600">Disposition</label>
+      <select id="qn2-disposition" style="padding:6px;border:1px solid #cfd3d7;border-radius:4px;">
+        <option value="">Select a Disposition</option>
+        <option>Inbound Sales</option>
+        <option>Outbound Sales</option>
+      </select>
+
+
+      <label for="qn2-reason" style="justify-self:end;font-weight:600">Reason</label>
+      <select id="qn2-reason" style="padding:6px;border:1px solid #cfd3d7;border-radius:4px;">
+        <option value="">Select a Disposition First</option>
+      </select>
+
+      <label for="qn2-text" style="justify-self:end;font-weight:600">Notes</label>
+      <textarea id="qn2-text" rows="4" style="width:100%;padding:6px;border:1px solid #cfd3d7;border-radius:4px;resize:vertical"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button id="qn2-cancel" class="cv-btn">Cancel</button>
+      <button id="qn2-save" style="min-width:90px;padding:6px 12px;border:0;border-radius:4px;background:#006dcc;color:#fff;font-weight:700;cursor:pointer">Save</button>
+    </div>
+  `;
+
+  // add to DOM to measure
+  document.body.appendChild(pop);
+
+  // init values
+  const dispSel = pop.querySelector('#qn2-disposition');
+  const reasonSel = pop.querySelector('#qn2-reason');
+  const txt = pop.querySelector('#qn2-text');
+
+  function populateReasons(disp) {
+    reasonSel.innerHTML = '';
+    const opts = QN_REASONS[disp] || [];
+    if (!opts.length) {
+      reasonSel.innerHTML = '<option value="">Select a Disposition First</option>';
+      return;
+    }
+    opts.forEach((label, i) => {
+      const o = document.createElement('option');
+      o.value = label;
+      o.textContent = label;
+      if (i === 0) o.selected = true;
+      reasonSel.appendChild(o);
+    });
+  }
+
+  const dispInit = (initial && initial.disposition) || 'Inbound Sales';
+  dispSel.value = dispInit;
+  populateReasons(dispInit);
+  txt.value = (initial && initial.notes) || '';
+  dispSel.onchange = () => populateReasons(dispSel.value);
+
+ 
+  // position near the icon but keep it inside the queue modal bounds
+const iconRect = anchorEl.getBoundingClientRect();
+const modalEl  = document.getElementById('cvqs-inline-modal');
+const box = modalEl
+  ? modalEl.getBoundingClientRect()
+  : { left: 8, top: 8, right: window.innerWidth - 8, bottom: window.innerHeight - 8 };
+
+const gap = 8;
+
+// measure after it's in the DOM
+const rect = pop.getBoundingClientRect();
+const pw = rect.width;
+const ph = rect.height;
+
+// Horizontal: prefer right of the icon; if no room, tuck to the LEFT of the icon
+let left = (iconRect.right + gap + pw <= box.right)
+  ? iconRect.right + gap
+  : iconRect.right - pw;
+
+// Vertical: prefer below; if no room, flip above
+let top = (iconRect.bottom + gap + ph <= box.bottom)
+  ? iconRect.bottom + gap
+  : iconRect.top - ph - gap;
+
+// Clamp to the modal’s box so it never bleeds out
+left = Math.min(Math.max(left, box.left + gap), box.right - pw - gap);
+top  = Math.min(Math.max(top,  box.top  + gap), box.bottom - ph - gap);
+
+pop.style.left = `${left}px`;
+pop.style.top  = `${top}px`;
+pop.style.visibility = 'visible';
+
+
+  // close helpers
+  const close = () => {
+    document.removeEventListener('click', onDocClick, true);
+    document.removeEventListener('keydown', onKeyDown, true);
+    pop.remove();
+  };
+  const onDocClick = (e) => {
+    if (pop.contains(e.target) || anchorEl.contains(e.target)) return;
+    close();
+  };
+  const onKeyDown = (e) => { if (e.key === 'Escape') close(); };
+
+  document.addEventListener('click', onDocClick, true);
+  document.addEventListener('keydown', onKeyDown, true);
+
+  // buttons
+  pop.querySelector('#qn2-close').addEventListener('click', close);
+  pop.querySelector('#qn2-cancel').addEventListener('click', close);
+  pop.querySelector('#qn2-save').addEventListener('click', () => {
+    const payload = {
+      disposition: dispSel.value || '',
+      reason:      reasonSel.value || '',
+      notes:       txt.value || ''
+    };
+    console.log('[queueNotesPopover] Saved', payload);
+    close();
+  });
+}
+// ==== /queueNotesPopover ====
+
+// ===== /continue modal =====
+const rowsForQueue = getRowsForQueue(queueNameOnly, queueNumber);
+
+  modal.innerHTML = `
+    <style>      
+
+      .cvqs-call-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: sans-serif;
+        font-size: 13px;
+        border: 1px solid #ccc;
+        table-layout: auto; /* was: fixed */
+      }
+
+      /* Header cells */
+      .cvqs-call-table thead th {
+        background: white;
+        color: #004a9b;
+        text-align: left;
+        padding: 6px 8px;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+      }
+
+      /* Body cells */
+      .cvqs-call-table tbody td {
+        padding: 6px 8px;
+        border-right: 1px solid #eee;
+        border-left: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+      }
+
+      /* Action cell (real cell, not :last-child) */
+      .cvqs-call-table td.cvqs-action-cell {
+        white-space: nowrap;
+        text-align: center;
+        padding: 6px 8px;
+        position: relative;
+        background: inherit; /* let row hover/zebra show through */
+      }
+
+      /* Ensure the action cell also shows row hover */
+      .cvqs-call-table tbody tr:hover td.cvqs-action-cell {
+        background-color: #f3f3f3;
+      }
+      
+
+      /* Image baseline alignment */
+      .cvqs-call-table img {
+        vertical-align: middle;
+      }
+
+      /* Icon buttons (Clarity-style hover-fade) */
+      .cvqs-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #ffffff;
+        margin: 3px;
+        border: 1px solid #dcdcdc;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .cvqs-icon-btn:focus {
+        outline: none;
+      }
+
+      .cvqs-icon-btn img {
+        width: 14px;
+        height: 14px;
+        pointer-events: none;
+        opacity: 0.35;
+        transition: opacity 0.2s ease-in-out;
+      }
+
+      /* On hover: icon brightens, not the button */
+      .cvqs-icon-btn:hover img,
+      tr:hover .cvqs-icon-btn img {
+        opacity: 1;
+      }
+    </style>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+      <button id="cvqs-back-btn" style="font-weight:bold;">Back</button>
+    </div>
+    <h2 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 600; color: #000;">
+      ${queueNameOnly} Queue (${queueNumber}) ${getStatTitle(code)}
+    </h2>
+    <div style="margin:10px 0;">
+      <input placeholder="Search calls" style="padding:6px 8px;width:200px"> 
+      <img src="${magnifyIcon}" style="width:16px;vertical-align:middle;margin-left:5px" alt="">
+    </div>
+    <table class="cvqs-call-table">
+      <thead>
+        <tr>
+          <th>Call Time</th><th>Caller Name</th><th>Caller Number</th><th>DNIS</th>
+          <th>Time in Queue</th><th>Agent Extension</th><th>Agent Phone</th>
+          <th>Agent Name</th><th>Agent Time</th><th>Agent Release Reason</th>
+          <th>Queue Release Reason</th><th></th> <!-- keep this blank TH -->
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsForQueue}
+      </tbody>
+    </table>
+  `;
+
+  // add to DOM
+  const container = document.querySelector('#modal-body-reports');
+  if (container) {
+    container.style.position = 'relative';
+    container.appendChild(modal);
+  } else {
+    document.body.appendChild(modal);
+  }
+
+  insertDateRange(modal);
+
+  // helper
+function insertDateRange(modalEl) {
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+
+  const formatDate = (date) => {
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  };
+
+  const rangeText = `${formatDate(yesterday)} 12:00 am to ${formatDate(now)} 11:59 pm`;
+
+  const rangeDiv = document.createElement('div');
+  rangeDiv.textContent = rangeText;
+  rangeDiv.style.margin = '8px 0 10px 0';
+  rangeDiv.style.fontSize = '13px';
+  rangeDiv.style.color = '#555';
+
+  // Scope to this modal (no global query)
+  const title = modalEl.querySelector('h2');
+  if (title) title.insertAdjacentElement('afterend', rangeDiv);
+}
+
+  const backBtn = modal.querySelector('#cvqs-back-btn');
+  backBtn.addEventListener('click', () => {
+    console.log('[CVQS] Back button clicked - closing modal');
+    modal.remove(); // Cleanly removes entire modal
+  });
+
+  // inject icons into each row
+  modal.querySelectorAll('tbody tr').forEach(injectIcons);
+
+  
+
+  //  Event delegation so Notes (and others) always work after HTML swaps
+  modal.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cvqs-icon-btn[data-icon]');
+    if (!btn || !modal.contains(btn)) return;
+
+    const kind = btn.dataset.icon;
+    if (kind === 'notes') {
+      // uses your existing function defined above in this scope
+      openQueueNotesPopover(btn);
+      return;
+    }
+    if (kind === 'download') {
+      // no-op or your download action
+      return;
+    }
+    if (kind === 'listen') {
+      // no-op or your listen action
+      return;
+    }
+    if (kind === 'cradle') {
+      // no-op or your cradle-to-grave action
+      return;
+    }
+  });
+
+  // (Optional) keyboard: make Space/Enter activate the buttons
+  modal.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.cvqs-icon-btn[data-icon]')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+}
+
+
+
+  function injectTable(doc, table) {
+    const { colMap, nameIdx } = mapHeaders(table);
+    const statCodes = Object.keys(colMap);
+    if (!statCodes.length) return 0;
+    let wrote = 0;
+    Array.from(table.tBodies[0]?.rows || []).forEach(tr => {
+      const name = norm(tr.cells[nameIdx]?.textContent);
+      const data = CVQ_DATA[name];
+      if (!data) return;
+      statCodes.forEach(code => {
+        const td = tr.cells[colMap[code]];
+        if (!td) return;
+        const val = data[code];
+        if (val == null) return;
+        linkify(td, name, code, val);
+        wrote++;
+      });
+    });
+    return wrote;
+  }
+
+  function attach(doc, table) {
+    const apply = () => {
+      const n = injectTable(doc, table);
+      if (n) LOG('wrote', n, 'cell(s) in', doc.defaultView?.location?.href || '(doc)');
+    };
+    let last = -1, calmMs = 600, lastChange = Date.now(), tries = 0;
+    const t = doc.defaultView.setInterval(() => {
+      tries++;
+      const rows = table.tBodies[0]?.rows.length || 0;
+      if (rows !== last) { last = rows; lastChange = Date.now(); }
+      if (Date.now() - lastChange > calmMs || tries > 40) {
+        doc.defaultView.clearInterval(t);
+        apply();
+      }
+    }, 150);
+
+    try {
+      const $ = doc.defaultView.jQuery;
+      if ($ && $.fn && $.fn.DataTable) {
+        $(table).on('draw.dt', apply);
+      }
+    } catch (_) {}
+
+    const tb = table.tBodies[0];
+    if (tb) new doc.defaultView.MutationObserver(apply)
+      .observe(tb, { childList: true, subtree: true });
+
+    doc.defaultView.cvqsForce = apply;
+  }
+
+  function boot() {
+    const docs = collectDocs(document);
+    LOG('scanning', docs.length, 'document(s)…');
+    let attached = 0;
+    docs.forEach(doc => {
+      const tables = candidateTables(doc);
+      if (!tables.length) return;
+      tables.forEach(tbl => { attach(doc, tbl); attached++; });
+    });
+    if (!attached) LOG('no candidate tables found (yet)');
+  }
+
+  boot();
+  let tries = 0;
+  const again = setInterval(() => {
+    tries++;
+    boot();
+    if (tries >= MAX_SCAN_TRIES) clearInterval(again);
+  }, 350);
 })();
+
+
+
+
+
+
 
