@@ -1832,61 +1832,67 @@ if (summaryBox) {
   
 // ---- New: Simulated Transcript Injection ----
 
-  var fakeInbound = [
-  { start: 0.00,  end: 6.00,   text: "Thanks for calling Mr. Service. How can I help today?" },
-  { start: 6.10,  end: 12.00,  text: "Hi, this is Dan calling back. I'm looking for an appointment this Saturday." },
-  { start: 12.10, end: 18.00,  text: "We can check that. What address should we use?" },
-  { start: 18.10, end: 24.00,  text: "456 East Elm, on the corner of Madison and Elm." },
-  { start: 24.10, end: 31.00,  text: "Got it—456 East Elm at Madison. One moment while I check availability." },
-  { start: 31.10, end: 38.00,  text: "Sure, thanks." },
-  { start: 38.10, end: 45.00,  text: "Saturday has an 8–10 a.m. window and a 1–3 p.m. window. Which do you prefer?" },
-  { start: 45.10, end: 51.00,  text: "The afternoon, 1–3 p.m., please." },
-  { start: 51.10, end: 58.00,  text: "Reserved. Did you already send pictures of the area we’ll be working on?" },
-  { start: 58.10, end: 64.00,  text: "Yes, I emailed them earlier today." },
-  { start: 64.10, end: 72.00,  text: "I see them here—thanks. The photos look clear and helpful." },
-  { start: 72.10, end: 80.00,  text: "Great, just wanted to be sure you had them." },
-  { start: 80.10, end: 88.00,  text: "Based on the pictures, our standard service should cover everything." },
-  { start: 88.10, end: 95.00,  text: "Okay, sounds good." },
-  { start: 95.10, end: 103.00, text: "You’ll receive a confirmation by text and email for Saturday, 1–3 p.m." },
-  { start: 103.10,end: 110.00, text: "I’ll watch for those." },
-  { start: 110.10,end: 116.00, text: "Any entry notes, pets, or parking details we should add?" },
-  { start: 116.10,end: 120.00, text: "No special notes. Street parking is fine. Thanks for your help." }
+  // ---- New: Simulated Transcript Injection ----
+
+// ---- New: Simulated Transcript Injection ----
+
+var fakeInbound = [
+  { start: 0.00,  end: 6.00,   text: "Thanks for calling Sterling Sales Honda, Jeep, and GMC. This is Abbey — how can I help you today?" },
+  { start: 6.10,  end: 11.00,  text: "Hi Abbey, I saw a 2024 Honda CR-V on your website and had a couple of questions." },
+  { start: 11.10, end: 16.00,  text: "Of course! Before we dive in, can I grab your name and callback number just in case we get disconnected?" },
+  { start: 16.10, end: 21.00,  text: "Sure — it's Amanda Price, and my number is 586-555-0147." },
+  { start: 21.10, end: 26.00,  text: "Thanks, Amanda. Which trim or color were you looking at?" },
+  { start: 26.10, end: 31.00,  text: "It was the EX-L in silver. It had leather and the upgraded audio, I think?" },
+  { start: 31.10, end: 36.00,  text: "Yes, that would be the EX-L with the premium package. Let me check our stock real quick." },
+  { start: 36.10, end: 42.00,  text: "Okay, thanks." },
+  { start: 42.10, end: 47.00,  text: "We’ve got one in silver on the lot and another arriving Monday in black." },
+  { start: 47.10, end: 53.00,  text: "Good to know. I actually got prequalified online last night — does that help speed things up?" },
+  { start: 53.10, end: 58.00,  text: "It does — that puts you ahead for paperwork. Planning to finance through us?" },
+  { start: 58.10, end: 64.00,  text: "Yes — no trade-in, just buying outright or through your team." },
+  { start: 64.10, end: 69.00,  text: "Perfect. Did you want to come in today or tomorrow?" },
+  { start: 69.10, end: 74.00,  text: "Tomorrow’s better. I’m near Lakeside Mall — are you close by?" },
+  { start: 74.10, end: 79.00,  text: "Very — we’re five minutes east off Mound Road." },
+  { start: 79.10, end: 84.00,  text: "Awesome. Do you have anything open mid-morning?" },
+  { start: 84.10, end: 89.00,  text: "We’ve got a 10:45 with Howie. He’ll have the EX-L and your prequal info ready." },
+  { start: 89.10, end: 94.00,  text: "Perfect. Should I bring anything else with me?" },
+  { start: 94.10, end: 99.00,  text: "Just your ID and insurance. You’ll also get a confirmation text and email." },
+  { start: 99.10, end: 105.00, text: "Sounds good. I’ll watch for those. Thanks again for all the help, Amy." },
+  { start: 105.10,end: 112.00, text: "You got it, Amanda. We’ll see you tomorrow at 10:45. Have a great day!" }
 ];
 
 var fakeInboundSummary =
-  "Dan from 456 East Elm inquired about availability for service this Saturday. " +
-  "They confirmed their location at the corner of Madison and Elm and asked whether Mr. Service had received their pictures. " +
-  "Mr. Service confirmed receipt and reviewed them during the call. " +
-  "Mr. Service confirmed no special notes and that street parking is fine. The next step is the tech appointment for Saturday.";
+  "Amanda Price called Sterling Sales after viewing a 2024 Honda CR-V EX-L online. She asked about availability, confirmed interest in the silver model with leather and premium audio, and mentioned she had already completed prequalification online. Amy confirmed the vehicle was in stock, collected Amanda’s contact info, and scheduled a 10:45 a.m. appointment with Howie. Amanda was advised to bring ID and insurance, and will receive a confirmation by text and email.";
+
 
 var fakeOutbound = [
-  { start: 0.00,  end: 6.00,   text: "Hi Jane. This is Mr. Service, calling to confirm tomorrow’s appointment." },
-  { start: 6.10,  end: 10.00,  text: "Great, thanks for calling." },
-  { start: 10.10, end: 16.00,  text: "We have you at 123 Main Street, just off Elm. Is that correct?" },
-  { start: 16.10, end: 21.00,  text: "Yes, that’s right." },
-  { start: 21.10, end: 28.00,  text: "Your window is 10:00 a.m. to 12:00 p.m. Does that still work?" },
-  { start: 28.10, end: 33.00,  text: "Yep, that window works." },
-  { start: 33.10, end: 40.00,  text: "Perfect. Anyone 18 or older will need to be present during the visit." },
-  { start: 40.10, end: 45.00,  text: "I’ll be here." },
-  { start: 45.10, end: 52.00,  text: "Great. Do you have pets we should plan for?" },
-  { start: 52.10, end: 57.00,  text: "One dog. I’ll put him in the backyard." },
-  { start: 57.10, end: 64.00,  text: "Thanks. Parking on the street near the front entrance is fine." },
-  { start: 64.10, end: 69.00,  text: "Street parking is available." },
-  { start: 69.10, end: 76.00,  text: "Any gate codes or access notes we should add?" },
-  { start: 76.10, end: 81.00,  text: "No codes—front door is fine." },
-  { start: 81.10, end: 90.00,  text: "You’ll get a text when the tech is on the way, including an ETA link." },
-  { start: 90.10, end: 96.00,  text: "Sounds good." },
-  { start: 96.10, end: 104.00, text: "Do you have any questions or special requests before tomorrow?" },
-  { start: 104.10,end: 109.00, text: "No, I think we’re all set." },
-  { start: 109.10,end: 116.00, text: "Perfect. If plans change, reply to the reminder or call before 8 a.m." },
-  { start: 116.10,end: 120.00, text: "Will do—thanks. See you tomorrow." }
+  { start: 0.00,  end: 6.00,   text: "Hi Amanda, this is Howie from Sterling Sales Honda, Jeep, and GMC — calling with some great news." },
+  { start: 6.10,  end: 11.00,  text: "Hi Howie! I’ve been hoping to hear from you." },
+  { start: 11.10, end: 17.00,  text: "Just spoke with our finance department — your application was approved for the 2024 CR-V EX-L." },
+  { start: 17.10, end: 23.00,  text: "That’s amazing, thank you! What’s the next step?" },
+  { start: 23.10, end: 29.00,  text: "Next step is scheduling a time for you to come in, finalize the paperwork, and handle the down payment." },
+  { start: 29.10, end: 35.00,  text: "Sounds good. I should be free tomorrow after 11 a.m." },
+  { start: 35.10, end: 41.00,  text: "We have a 12:30 slot open. That gives us time to walk through everything and answer questions." },
+  { start: 41.10, end: 47.00,  text: "Perfect — let’s do 12:30. Do I need to bring anything?" },
+  { start: 47.10, end: 52.00,  text: "Just your ID, proof of insurance, and the down payment method we discussed." },
+  { start: 52.10, end: 58.00,  text: "I’ll bring my debit card and a printed insurance copy, just in case." },
+  { start: 58.10, end: 64.00,  text: "That works perfectly. We’re at Mound and 17 Mile — same location as your test drive." },
+  { start: 64.10, end: 70.00,  text: "Yep, I remember. Should I ask for you at the front?" },
+  { start: 70.10, end: 76.00,  text: "Yep — just let the front desk know you're here to meet Howie. I’ll come grab you." },
+  { start: 76.10, end: 82.00,  text: "Awesome. Will I get a text or anything confirming the time?" },
+  { start: 82.10, end: 88.00,  text: "Yes — you’ll get a confirmation text and email in just a few minutes." },
+  { start: 88.10, end: 94.00,  text: "Got it. And we’re going to go over warranty stuff too, right?" },
+  { start: 94.10, end: 99.00,  text: "Absolutely. We’ll review that and the service add-ons before you sign." },
+  { start: 99.10, end: 105.00, text: "Cool. I think I’m all set then — looking forward to it." },
+  { start: 105.10,end: 111.00, text: "Same here. Congrats again, Amanda — we’ll see you tomorrow at 12:30." },
+  { start: 111.10,end: 118.00, text: "Thanks again, Howie. I’ll be there!" }
 ];
 
+
 var fakeOutboundSummary =
-  "Mr. Service placed a follow-up call to confirm the customer appointment for Jane is scheduled for tomorrow at 8 a.m. " +
-  "The address was confirmed as 123 Main Street, just off Elm. One dog will be put into the backyard. Street parking is available, and no codes are needed. " +
-  "Jane verified the time and confirmed they had everything needed for the appointment. " +
-  "Mr. Service confirmed tech link reminder text and how to contact the location if plans should change.";
+  "Howie from Sterling Sales called Amanda Price to confirm that her financing for the 2024 Honda CR-V EX-L had been approved. " +
+  "They scheduled a 12:30 p.m. appointment the next day to finalize paperwork and make the down payment. " +
+  "Amanda was instructed to bring her ID, proof of insurance, and debit card. Howie confirmed the dealership location and that she’d receive a text and email confirmation. " +
+  "They also agreed to review warranty options during the appointment.";
 
  
   function parseDuration(str) {
