@@ -2731,7 +2731,7 @@ if (!window.__cvQueuesTilesInit) {
     { key:'main',     title:'Operator Queue (300)',      active:0, waiting:0, timer:false, idle:7 },
     { key:'sales',    title:'Service Queue (301)',         active:3, waiting:2, timer:true,  idle:6 },
     { key:'existing', title:'Sales Queue (302)', active:1, waiting:3, timer:true,  idle:4 },
-    { key:'billing',  title:'Finance (303)',           active:0, waiting:0, timer:false, idle:1 }
+    { key:'billing',  title:'Finance Queue (303)',           active:0, waiting:0, timer:false, idle:1 }
   ];
 
   // ---- UTIL: CALL CENTER scheduleInject (safe RAF/timeout) ----
@@ -4493,10 +4493,10 @@ if (!document.__cvqfRowStatusCapture) {
   const magnifyIcon = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/magnifying-glass-solid-full.svg';
 
   const CVQ_DATA = {
-    "Main Routing":     { VOL: 5, CO: 5, ATT: "2:26", AH: "0:10", AC: null, AWT: "1:45" },
-    "New Sales":        { VOL: 21, CO: 10, ATT: "3:14", AH: "0:00", AC: null, AWT: "2:12" },
-    "Existing Customer":{ VOL: 5, CO: 5, ATT: "1:38", AH: "0:05", AC: null, AWT: "1:01" },
-    "Billing":          { VOL: 3, CO: 3, ATT: "2:00", AH: "0:00", AC: null, AWT: "1:33" },
+    "Operator Queue":     { VOL: 5, CO: 5, ATT: "2:26", AH: "0:10", AC: null, AWT: "1:45" },
+    "Service Queue":        { VOL: 21, CO: 10, ATT: "3:14", AH: "0:00", AC: null, AWT: "2:12" },
+    "Sales Queue":{ VOL: 5, CO: 5, ATT: "1:38", AH: "0:05", AC: null, AWT: "1:01" },
+    "Finance Queue":          { VOL: 3, CO: 3, ATT: "2:00", AH: "0:00", AC: null, AWT: "1:33" },
   };
 
   const QUEUE_NAMES = Object.keys(CVQ_DATA);
