@@ -4107,11 +4107,11 @@ if (!window.__cvAgentsPanelInit) {
 
   function buildRows(agent){
     var rows = [
-      {num:'300', title:'Main Routing (300)'},
-      {num:'301', title:'New Sales (301)'},
-      {num:'302', title:'Existing Customer (302)'}
+      {num:'300', title:'Operator Queue (300)'},
+      {num:'301', title:'Service Queue (301)'},
+      {num:'302', title:'Sales Queue (302)'}
     ];
-    if (String(agent.ext)==='202') rows.push({num:'303', title:'Billing (303)'});
+    if (String(agent.ext)==='202') rows.push({num:'303', title:'Finance Queue (303)'});
 
     var defaultOnline = !(window.CURRENT && window.CURRENT.default === 'off');
 
@@ -4477,7 +4477,7 @@ if (!document.__cvqfRowStatusCapture) {
 
 
 
-/* ==== CV Queue Stats: robust auto-discovery injector (patched for Main Routing modal) ===== */
+/* ==== CV Queue Stats: robust auto-discovery injector (patched for Operator Queue modal) ===== */
 (() => {
   if (window.__cvqs_auto_installed__) return;
   window.__cvqs_auto_installed__ = true;
@@ -4502,10 +4502,10 @@ if (!document.__cvqfRowStatusCapture) {
   const QUEUE_NAMES = Object.keys(CVQ_DATA);
 
   const QUEUE_NUMBERS = {
-  "Main Routing": "300",
-  "New Sales": "301",
-  "Existing Customer": "302",
-  "Billing": "303"
+  "Operator Queue": "300",
+  "Service Queue": "301",
+  "Sales Queue": "302",
+  "Finance Queue": "303"
  };
 
   // maps must exist before you assign into them
@@ -4540,7 +4540,7 @@ const keyNorm = s => (s || '').replace(/\s+/g,' ').trim().toLowerCase();
 
 
 
-// --- Existing Customer (by number: 302) ---
+// --- Sales Queue (by number: 302) ---
 CVQS_QUEUE_ROWS_BY_NUM["302"] = [
   `<tr><td>Today, 1:46 pm</td><td>Tucker Jones</td><td>(989) 555-0128</td><td>248-436-3443</td><td>6:17</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>1:28</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
   `<tr><td>Today, 1:41 pm</td><td>Liam Nguyen</td><td>(810) 555-0100</td><td>248-436-3449</td><td>5:29</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:06</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
@@ -4548,17 +4548,17 @@ CVQS_QUEUE_ROWS_BY_NUM["302"] = [
   `<tr><td>Today, 1:35 pm</td><td>Jack Burton</td><td>(517) 555-0148</td><td>(313) 995-9080</td><td>0:42</td><td>202</td><td>202</td><td>Jake Lee</td><td>7:22</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
   `<tr><td>Today, 1:35 pm</td><td>Sarah Patel</td><td>(248) 555-0196</td><td>248-436-3443</td><td>1:57</td><td>200</td><td>200</td><td>Mike Johnson</td><td>3:24</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`
 ];
-CVQS_QUEUE_ROWS_BY_NAME[("Existing Customer")] = CVQS_QUEUE_ROWS_BY_NUM["302"];
+CVQS_QUEUE_ROWS_BY_NAME[("Sales Queue")] = CVQS_QUEUE_ROWS_BY_NUM["302"];
 
-// --- Billing (by number: 303; change if needed) ---
+// --- Finance Queue (by number: 303; change if needed) ---
 CVQS_QUEUE_ROWS_BY_NUM["303"] = [
   `<tr><td>Today, 1:30 pm</td><td>Chloe Bennet</td><td>(313) 555-0120</td><td>248-436-3443</td><td>5:21</td><td>200</td><td>200</td><td>Mike Johnson</td><td>6:11</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
   `<tr><td>Today, 11:41 am</td><td>Elizabeth Li</td><td>(313) 555-8471</td><td>(313) 995-9080</td><td>1:23</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>2:17</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
   `<tr><td>Today, 09:56 am</td><td>Rory Davis</td><td>(313) 555-0179</td><td>(313) 995-9080</td><td>1:01</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:17</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`
 ];
-CVQS_QUEUE_ROWS_BY_NAME[("Billing")] = CVQS_QUEUE_ROWS_BY_NUM["303"];
+CVQS_QUEUE_ROWS_BY_NAME[("Finance Queue")] = CVQS_QUEUE_ROWS_BY_NUM["303"];
 
-// --- New Sales (assumed number: 301; change if needed) ---
+// --- Service Queue (assumed number: 301; change if needed) ---
 CVQS_QUEUE_ROWS_BY_NUM["301"] = [
   `<tr><td>Today, 11:22 am</td><td>JR Knight</td><td>248-555-0144</td><td>248-436-3443</td><td>3:49</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:35</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
   `<tr><td>Today, 11:18 am</td><td>Sarah Patel</td><td>(248) 555-0196</td><td>(313) 995-9080</td><td>2:22</td><td>205</td><td>205</td><td>Alex Roberts</td><td>17:29</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
@@ -4585,7 +4585,7 @@ CVQS_QUEUE_ROWS_BY_NUM["301"] = [
   `<tr><td>Today, 1:59 pm</td><td>Harper Green</td><td>(947) 555-0179</td><td>248-436-3447</td><td>1:08</td><td>205</td><td>205</td><td>Alex Roberts</td><td>3:11</td><td>Term: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`,
   `<tr><td>Today, 1:43 pm</td><td>Michael Chen</td><td>(313) 555-0195</td><td>248-436-3450</td><td>3:26</td><td>210</td><td>210</td><td>Jessica Brown</td><td>5:04</td><td>Orig: Bye</td><td>Connect</td><td class="cvqs-action-cell"></td></tr>`
 ];
-CVQS_QUEUE_ROWS_BY_NAME[keyNorm("New Sales")] = CVQS_QUEUE_ROWS_BY_NUM["301"];
+CVQS_QUEUE_ROWS_BY_NAME[keyNorm("Service Queue")] = CVQS_QUEUE_ROWS_BY_NUM["301"];
 
   
 
@@ -4798,7 +4798,7 @@ modal.style.maxHeight = 'calc(100vh - 32px)';
 modal.style.overflow  = 'auto';
 // ==== queueNotesPopover (anchored dropdown, unique IDs) ====
 const QN_REASONS = {
-  'Inbound Sales' : ['Existing customer question', 'Follow up', 'Referral'],
+  'Inbound Sales' : ['Sales Queue question', 'Follow up', 'Referral'],
   'Outbound Sales': ['Cold Call', 'Follow-up']
 };
 
