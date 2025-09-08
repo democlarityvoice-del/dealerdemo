@@ -2712,18 +2712,18 @@ if (!window.__cvQueuesTilesInit) {
   const ICON_PHONE   = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phone-solid-full.svg';
   const ICON_ARROW   = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/arrow-up-solid-full.svg';
 
-  // ---- DECLARE CALL CENTER REAL ROUTES (claritydemo) ----
+  // ---- DECLARE CALL CENTER REAL ROUTES dealerdemo) ----
   const IDLE_LINKS = {
-    main:     '/portal/callqueues/editagents/300@claritydemo/Ring+All',
-    sales:    '/portal/callqueues/editagents/301@claritydemo/Round-robin',
-    existing: '/portal/callqueues/editagents/302@claritydemo/Linear+Cascade',
-    billing:  '/portal/callqueues/editagents/303@claritydemo/Ring+All'
+    main:     '/portal/callqueues/editagents/300@dealerdemo/Ring+All',
+    sales:    '/portal/callqueues/editagents/301@dealerdemo/Ring+All',
+    existing: '/portal/callqueues/editagents/302@dealerdemo/Ring+All',
+    billing:  '/portal/callqueues/editagents/303@dealerdemo/Ring+All'
   };
   const QUEUE_EDIT_LINKS = {
-    main:     '/portal/callqueues/edit/300@claritydemo',
-    sales:    '/portal/callqueues/edit/301@claritydemo',
-    existing: '/portal/callqueues/edit/302@claritydemo',
-    billing:  '/portal/callqueues/edit/303@claritydemo'
+    main:     '/portal/callqueues/edit/300@dealerdemo',
+    sales:    '/portal/callqueues/edit/301@dealerdemo',
+    existing: '/portal/callqueues/edit/302@dealerdemo',
+    billing:  '/portal/callqueues/edit/303@dealerdemo'
   };
 
   // ---- DECLARE CALL CENTER QUEUE DATA (demo counts) ----
@@ -3477,7 +3477,7 @@ if (!window.__cvAgentsPanelInit) {
       left.appendChild(glyph);
       left.appendChild(name);
 
-      var sip = 'sip:' + a.ext + '@claritydemo';
+      var sip = 'sip:' + a.ext + '@dealerdemo';
       var safeName = encodeURIComponent(a.name).replace(/%20/g,'+');
       var queuesHref = '/portal/agents/agentrouting/' + encodeURIComponent(sip) + '/' + safeName;
       // Use the platform modal when available; otherwise let the <a> navigate.
@@ -3817,7 +3817,7 @@ if (!window.__cvAgentsPanelInit) {
 /* === CV Agents: Queues icon — single, final block === */
 (function(){
   var PANEL_ID = 'cv-agents-panel';
-  var DOMAIN   = 'claritydemo';
+  var DOMAIN   = 'dealerdemo';
 
   function runIn(doc){
     if (!doc || doc.__cvAgentsQueuesBound) return;
@@ -3949,7 +3949,7 @@ if (!window.__cvAgentsPanelInit) {
   function openQueues(row){
     var p = parseRow(row);
     if (!p.ext) { console.warn('[cv queues] no extension parsed'); return; }
-    var sip = 'sip:'+p.ext+'@claritydemo';
+    var sip = 'sip:'+p.ext+'@dealerdemo';
 
     // Try the native call first (if it exists)
     try {
@@ -3987,7 +3987,7 @@ if (!window.__cvAgentsPanelInit) {
   var ROOT_ID  = 'cvqf-root';
   var STYLE_ID = 'cvqf-style';
   var PANEL_ID = 'cv-agents-panel';
-  var DOMAIN   = 'claritydemo';
+  var DOMAIN   = 'dealerdemo';
 
   function $(sel, root){ return (root||document).querySelector(sel); }
   function $all(sel, root){ return (root||document).querySelectorAll(sel); }
