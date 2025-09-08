@@ -3360,15 +3360,15 @@ if (!window.__cvAgentsPanelInit) {
 
   // Agents (Bob on lunch; Mike/Brittany/Mark show phone icon)
   var AGENTS = [
-    { name:'Mike Johnson',      ext:200, online:true,  icon:'phone' },
-    { name:'Cathy Thomas',      ext:201, online:true,  icon:'user'  },
-    { name:'Jake Lee',          ext:202, online:false, icon:'user'  },
-    { name:'Bob Andersen',      ext:203, online:false, icon:'user'  },
+    { name:'Abbey Palmer',      ext:200, online:true,  icon:'phone' },
+    { name:'Emma Johnson',      ext:201, online:true,  icon:'user'  },
+    { name:'Liam Turner',          ext:202, online:false, icon:'user'  },
+    { name:'Mike Jones',      ext:210, online:false, icon:'user'  },
 
-    { name:'Brittany Lawrence', ext:204, online:true,  icon:'phone' },
-    { name:'Alex Roberts',      ext:205, online:true,  icon:'user'  },
-    { name:'Mark Sanchez',      ext:206, online:true,  icon:'phone' },
-    { name:'John Smith',        ext:207, online:true,  icon:'user'  }
+    { name:'Chad Sanders', ext:211, online:true,  icon:'phone' },
+    { name:'Isabella Martinez',      ext:212, online:true,  icon:'user'  },
+    { name:'Bob Smith',      ext:220, online:true,  icon:'phone' },
+    { name:'Ethan Moore',        ext:221, online:true,  icon:'user'  }
   ];
 
   // Helpers
