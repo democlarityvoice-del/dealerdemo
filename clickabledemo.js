@@ -4847,7 +4847,7 @@ function openQueueNotesPopover(anchorEl, initial) {
       </select>
 
       <label for="qn2-text" style="justify-self:end;font-weight:600">Notes</label>
-      <textarea id="qn2-text" rows="4" style="width:100%;padding:6px;border:1px solid #cfd3d7;border-radius:4px;resize:vertical"></textarea>
+      <textarea id="qn2-text" rows="4" style="width:100%;padding:1px;border:1px solid #cfd3d7;border-radius:4px;resize:vertical"></textarea>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
       <button id="qn2-cancel" class="cv-btn">Cancel</button>
