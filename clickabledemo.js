@@ -5108,7 +5108,210 @@ function insertDateRange(modalEl) {
   // inject icons into each row
   modal.querySelectorAll('tbody tr').forEach(injectIcons);
 
-  
+  // === CTG (inbound-only) — modal & timeline, scoped to this queue modal ===
+
+// Icon URLs 
+const ICON_PHONE     = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phone%20dialing.svg';
+const ICON_ANSWER    = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phone-solid-full.svg';
+const ICON_HANG      = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phone_disconnect_fill_icon.svg';
+const ICON_DIAL      = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/dialpad%20icon.svg';
+const ICON_ELLIPS    = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/ellipsis-solid-full.svg';
+const ICON_AGENTRING = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phoneringing.svg';
+
+// Map keys to <img> tags (keeps render code simple)
+const CVQS_CTG_ICONS = {
+  phone:     `<img src="${ICON_PHONE}"     alt="" />`,
+  answer:    `<img src="${ICON_ANSWER}"    alt="" />`,
+  hang:      `<img src="${ICON_HANG}"      alt="" />`,
+  dial:      `<img src="${ICON_DIAL}"      alt="" />`,
+  ellipsis:  `<img src="${ICON_ELLIPS}"    alt="" />`,
+  agentring: `<img src="${ICON_AGENTRING}" alt="" />`,
+};
+
+// styles for the CTG modal + timeline
+(function cvqsEnsureCtgStyles(){
+  if (modal.querySelector('#cvqs-ctg-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'cvqs-ctg-styles';
+  style.textContent = `
+    #cvqs-ctg-overlay { position:absolute; inset:0; background:rgba(0,0,0,.35); z-index:999; display:flex; align-items:flex-start; justify-content:center; padding:24px; }
+    #cvqs-ctg-modal { background:#fff; border-radius:8px; width:min(880px,96%); max-height:calc(100vh - 96px); overflow:auto; box-shadow:0 16px 40px rgba(0,0,0,.25); }
+    .cvqs-ctg-header { display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid #e5e8eb; font:600 16px/1.2 system-ui,sans-serif; }
+    .cvqs-ctg-body { padding:12px 8px 18px 8px; }
+    .cvqs-ctg-item { display:grid; grid-template-columns: 100px 28px 1fr; align-items:flex-start; gap:10px; padding:8px 12px; }
+    .cvqs-ctg-time { color:#111; font-weight:700; }
+    .cvqs-ctg-subtime { color:#777; font-size:12px; margin-top:2px; }
+    .cvqs-ctg-icon { width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
+    .cvqs-ctg-icon img { width:18px; height:18px; background:#f2f3f5; border:1px solid #e1e4e8; border-radius:50%; padding:3px; box-sizing:content-box; }
+    .cvqs-ctg-text { color:#111; }
+    .cvqs-ctg-sub { color:#777; font-size:12px; margin-top:2px; }
+    .cvqs-ctg-close { background:none; border:0; font-size:20px; line-height:1; cursor:pointer; padding:4px 8px; }
+  `;
+  modal.appendChild(style);
+})();
+
+function cvqsText(el){ return (el?.textContent || '').replace(/\s+/g,' ').trim(); }
+
+function cvqsTimeParts(date) {
+  const pad = n => String(n).padStart(2,'0');
+  let h = date.getHours(), am = 'AM';
+  if (h >= 12) { am = 'PM'; if (h > 12) h -= 12; }
+  if (h === 0) h = 12;
+  return `${h}:${pad(date.getMinutes())}:${pad(date.getSeconds())} ${am}`;
+}
+
+// Utility to build a timeline that “ticks” like your screenshot
+function cvqsTimelineBuilder(start=new Date()) {
+  let t = new Date(start.getTime());
+  let ms = 0;
+  const bump = inc => { ms += inc; t = new Date(start.getTime() + ms); };
+  const stamp = () => ({ time: cvqsTimeParts(t), subtime: ms ? `+${ms}ms` : '' });
+  return { bump, stamp };
+}
+
+// Build events from a row (inbound only). Adds AA+DTMF for “Main Routing”, then queue, then ring cascade, answer, hang.
+function cvqsBuildCtgEvents(tr, queueNameOnly, queueNumber) {
+  const c = tr.cells;
+  const callerName  = cvqsText(c[1]);
+  const callerNum   = cvqsText(c[2]);
+  const agentExt    = cvqsText(c[5]);
+  const agentName   = cvqsText(c[7]);
+  const queueRel    = cvqsText(c[10]); // e.g., "Orig: Bye", "Term: Bye", "SpeakAccount", "VMail"
+
+  const { bump, stamp } = cvqsTimelineBuilder(new Date());
+
+  const events = [];
+
+  // 1) Inbound call
+  events.push({ ...stamp(), icon:'phone', text:`Inbound call from ${callerNum}${callerName ? ` (${callerName})` : ''}`, sub:'STIR: Verified' });
+  bump(2);
+
+  // Optional “current timeframe” line (as in your screenshot)
+  events.push({ ...stamp(), icon:'ellipsis', text:'The currently active time frame is Daytime' });
+  bump(135);
+
+  // 2) Auto Attendant + selection for Main Routing (matches your example)
+  if (/main routing/i.test(queueNameOnly || '')) {
+    events.push({ ...stamp(), icon:'dial', text:'Connected to Auto Attendant Daytime 700' });
+    bump(23);
+    events.push({ ...stamp(), icon:'ellipsis', text:'Selected 1' });
+    bump(14);
+    events.push({ ...stamp(), icon:'ellipsis', text:'The currently active time frame is Daytime' });
+    bump(1000); // small pause before queue connect
+  }
+
+  // 3) Connected to Queue
+  const qLabel = queueNumber ? `${queueNameOnly} ${queueNumber}` : `${queueNameOnly || 'Queue'}`;
+  events.push({ ...stamp(), icon:'ellipsis', text:`Connected to Call Queue ${qLabel}` });
+  bump(286);
+
+  // 4) Ring cascade (use the table’s known agent plus a familiar list to mimic your order)
+  const ringRoster = [
+    'Mike Johnson (200)','Cathy Thomas (201)','Jake Lee (202)','Bob Andersen (203)','Brittany Lawrence (204)',
+    'Alex Roberts (205)','Mark Sanchez (206)','John Smith (207)','Emily Johnson (208)','Michael Williams (209)','Jessica Brown (210)'
+  ];
+
+  // Put the row’s agent first if present; then add the rest without duplicates
+  const primary = agentName ? `${agentName}${agentExt ? ` (${agentExt})` : ''}` : (agentExt ? `Agent (${agentExt})` : '');
+  const seen = new Set();
+  const cascade = [];
+  if (primary) { cascade.push(primary); seen.add(primary.toLowerCase()); }
+  ringRoster.forEach(n => { if (!seen.has(n.toLowerCase())) cascade.push(n); });
+
+  // Emit a few “is ringing” lines (you can increase/decrease count easily)
+  const RING_COUNT = Math.min(cascade.length, 11); // matches your screenshot depth
+  for (let i=0; i<RING_COUNT; i++) {
+    events.push({ ...stamp(), icon:'agentring', text:`${cascade[i]} is ringing` });
+    bump(286 + (i*143)); // ramps a little like your example
+  }
+
+  // 5) Answer + hang up tail (use release reason to decide tail)
+  events.push({ ...stamp(), icon:'answer', text:'Call answered by Agent' });
+  // Simulate talk time ~ 2 minutes before hangup
+  bump(120000);
+
+  if (/speakaccount/i.test(queueRel)) {
+    events.push({ ...stamp(), icon:'ellipsis', text:'Routed to SpeakAccount' });
+    bump(500);
+    events.push({ ...stamp(), icon:'ellipsis', text:'Sent to Voicemail' });
+  } else if (/v ?mail|voice ?mail/i.test(queueRel)) {
+    events.push({ ...stamp(), icon:'ellipsis', text:'Sent to Voicemail' });
+  } else {
+    events.push({ ...stamp(), icon:'hang', text:`${callerNum} hung up` });
+  }
+
+  return events;
+}
+
+// Open the overlay modal and render the timeline
+function cvqsOpenCtgModal(tr) {
+  // derive queue name & number from your <h2>: "<Name> Queue (<num>) ..."
+  const titleEl = modal.querySelector('h2');
+  let queueNameOnly = '', queueNumber = '';
+  if (titleEl) {
+    const m = cvqsText(titleEl).match(/^(.+?)\s+Queue\s+\((\d+)\)/i);
+    if (m) { queueNameOnly = m[1]; queueNumber = m[2]; }
+  }
+
+  const events = cvqsBuildCtgEvents(tr, queueNameOnly, queueNumber);
+
+ const overlay = document.createElement('div');
+overlay.id = 'cvqs-ctg-overlay';
+overlay.innerHTML = `
+  <div id="cvqs-ctg-modal" role="dialog" aria-modal="true" aria-labelledby="cvqs-ctg-title">
+    <div class="cvqs-ctg-header">
+      <span id="cvqs-ctg-title" class="cvqs-ctg-title">Cradle To Grave</span>
+      <button class="cvqs-ctg-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="cvqs-ctg-body">
+      ${events.map(ev => `
+        <div class="cvqs-ctg-item">
+          <div class="cvqs-ctg-time">
+            ${ev.time}
+            ${ev.subtime ? `<div class="cvqs-ctg-subtime">${ev.subtime}</div>` : ``}
+          </div>
+          <div class="cvqs-ctg-icon">${CVQS_CTG_ICONS[ev.icon] || ``}</div>
+          <div class="cvqs-ctg-text">
+            ${ev.text}
+            ${ev.sub ? `<div class="cvqs-ctg-sub">${ev.sub}</div>` : ``}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+`;
+
+
+(function cvqsHeaderStyles(){
+  if (document.getElementById('cvqs-ctg-header-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'cvqs-ctg-header-styles';
+  s.textContent = `
+    /* CTG modal container already exists; this just styles the header like Call History */
+    #cvqs-ctg-modal { background:#fff; border-radius:8px; box-shadow:0 16px 40px rgba(0,0,0,.25); }
+    .cvqs-ctg-header {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 16px; border-bottom:1px solid #ddd; background:#fff;
+      position:sticky; top:0; z-index:2; /* keeps header visible while scrolling */
+    }
+    .cvqs-ctg-title { font-weight:700; font-size:16px; color:#000; letter-spacing:.2px; }
+    .cvqs-ctg-close {
+      background:transparent; border:0; font-size:20px; line-height:1;
+      cursor:pointer; padding:4px 8px; opacity:.7;
+    }
+    .cvqs-ctg-close:hover { opacity:1; }
+  `;
+  document.head.appendChild(s);
+})();
+    
+    
+  const close = () => overlay.remove();
+  overlay.addEventListener('click', (e) => { if (e.target.id === 'cvqs-ctg-overlay') close(); });
+  overlay.querySelector('.cvqs-ctg-close').addEventListener('click', close);
+
+
+  modal.appendChild(overlay);
+}
 
   //  Event delegation so Notes (and others) always work after HTML swaps
   modal.addEventListener('click', (e) => {
@@ -5133,18 +5336,56 @@ function insertDateRange(modalEl) {
       // no-op or your cradle-to-grave action
       return;
     }
-  });
 
-  // (Optional) keyboard: make Space/Enter activate the buttons
-  modal.addEventListener('keydown', (e) => {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.cvqs-icon-btn[data-icon]')) {
-      e.preventDefault();
-      e.target.click();
+// === FIXED LISTEN BRANCH (no early return) ===
+    if (kind === 'listen') {
+      const tr   = btn.closest('tr');
+      const next = tr && tr.nextElementSibling;
+
+      // collapse if already open
+      if (next && next.classList && next.classList.contains('cv-audio-row')) {
+        next.remove();
+        btn.setAttribute('aria-expanded','false');
+        return;
+      }
+
+      // close any others in this modal
+      modal.querySelectorAll('.cv-audio-row').forEach(r => r.remove());
+
+      const colCount = tr.children.length;
+      const audioTr  = document.createElement('tr');
+      audioTr.className = 'cv-audio-row';
+
+      audioTr.innerHTML =
+        '<td colspan="'+colCount+'">' +
+          '<div class="cv-audio-player">' +
+            '<button class="cv-audio-play" aria-label="Play"></button>' +
+            '<span class="cv-audio-time">0:00 / 0:00</span>' +
+            '<div class="cv-audio-bar"><div class="cv-audio-bar-fill" style="width:0%"></div></div>' +
+            '<div class="cv-audio-right">' +
+              '<img class="cv-audio-icon" src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/speakericon.svg" alt="Listen">' +
+            '</div>' +
+          '</div>' +
+        '</td>';
+
+      tr.parentNode.insertBefore(audioTr, tr.nextSibling);
+      btn.setAttribute('aria-expanded','true');
+      return;
     }
-  });
+
+if (kind === 'cradle') {
+  const tr = btn.closest('tr');
+  if (!tr) return;
+  cvqsOpenCtgModal(tr);
+  return;
 }
 
 
+  });
+
+
+
+} // ← closes openQueueModal function
 
   function injectTable(doc, table) {
     const { colMap, nameIdx } = mapHeaders(table);
