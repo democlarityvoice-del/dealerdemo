@@ -5384,14 +5384,7 @@ overlay.innerHTML = `
       // no-op or your download action
       return;
     }
-    if (kind === 'listen') {
-      // no-op or your listen action
-      return;
-    }
-    if (kind === 'cradle') {
-      // no-op or your cradle-to-grave action
-      return;
-    }
+
 
 // === FIXED LISTEN BRANCH (no early return) ===
     if (kind === 'listen') {
