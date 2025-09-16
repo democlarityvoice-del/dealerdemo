@@ -5507,7 +5507,1023 @@ modal.addEventListener('click', (e) => {
 })();
 
 
+// AGENTS STATS
 
+// == CV Agent Stats Injection (using real provided data) ==// == CV Agent Stats Injection (linkify non-zero values) ==
+const isAgentStatsPage = () =>
+  /\/portal\/stats\/queuestats\/agent(?:[/?#]|$)/.test(location.href);
+
+(() => {
+  if (window.__cvas_agentstats_installed__) return;
+  if (!location.href.includes('/portal/stats/queuestats/agent')) return;
+  window.__cvas_agentstats_installed__ = true;
+
+const isAgentStatsPage = () =>
+  /\/portal\/stats\/queuestats\/agent(?:[/?#]|$)/.test(location.href);
+
+
+  // === Real Data from user ===
+  const CVAS_INBOUND = {
+    '200': { CH: 5, TT: '18:10', ATT: '18:10' },
+    '201': { CH: 3, TT: '09:40', ATT: '09:40' },
+    '202': { CH: 4, TT: '13:26', ATT: '13:26' },
+    '203': { CH: 2, TT: '30:57', ATT: '30:57' },
+    '204': { CH: 1, TT: '03:53', ATT: '03:53' },
+    '205': { CH: 4, TT: '30:27', ATT: '30:27' },
+    '206': { CH: 6, TT: '38:34', ATT: '38:34' },
+    '207': { CH: 0, TT: '00:00', ATT: '00:00' },
+  };
+
+  const CVAS_AHT = {
+    '200': { AHT: '05:55' },
+    '201': { AHT: '05:18' },
+    '202': { AHT: '08:09' },
+    '203': { AHT: '12:03' },
+    '204': { AHT: '03:53' },
+    '205': { AHT: '06:36' },
+    '206': { AHT: '06:22' },
+    '207': { AHT: '01:53' },
+  };
+
+
+  // === Combine Data ===
+  const CVAS_DATA = {};
+  Object.keys(CVAS_INBOUND).forEach(ext => {
+    CVAS_DATA[ext] = {
+      ...CVAS_INBOUND[ext],
+      ...(CVAS_AHT[ext] || {})
+    };
+  });
+
+// === Global Safe Initialization on TOP window ===
+const g = window.top;
+g.CVAS_CALLS_INBOUND_BY_AGENT  = g.CVAS_CALLS_INBOUND_BY_AGENT  || {};
+g.CVAS_CALLS_OUTBOUND_BY_AGENT = g.CVAS_CALLS_OUTBOUND_BY_AGENT || {};
+
+
+
+// CVAS Action Icons 
+const agentStatsDownload = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/download-solid-full.svg';
+const agentStatsListen   = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/speakericon.svg';
+const agentStatsCradle   = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/transcript.svg';
+const agentStatsNotes    = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/newspaper-regular-full.svg';
+
+
+const actionIcons = `
+<img src="${agentStatsListen}" title="Listen" class="cvas-icon" />
+<img src="${agentStatsCradle}" title="Cradle to Grave" class="cvas-icon" />
+<img src="${agentStatsNotes}" title="Notes" class="cvas-icon" />
+<img src="${agentStatsDownload}" title="Download" class="cvas-icon" />
+`;
+
+  const CVAS_HEADER_TO_STAT = {
+    'Calls Handled': 'CH',
+    'Talk Time': 'TT',  
+    'Average Talk Time': 'ATT',
+    'Average Handle Time': 'AHT'
+  };
+
+// Populate inbound calls data
+Object.assign(g.CVAS_CALLS_INBOUND_BY_AGENT, {
+"200": [
+`<tr><td>Today, 1:35 pm</td><td>Sarah Patel</td><td>(248) 555-0196</td><td>248-436-3443</td><td>1:57</td><td>200</td><td>200</td><td>Mike Johnson</td><td>3:24</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 1:30 pm</td><td>Chloe Bennet</td><td>(313) 555-0120</td><td>248-436-3443</td><td>5:21</td><td>200</td><td>200</td><td>Mike Johnson</td><td>6:11</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 10:27 am</td><td>Ruby Foster</td><td>(248) 555-0102</td><td>248-436-3449</td><td>4:21</td><td>200</td><td>200</td><td>Mike Johnson</td><td>4:16</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 10:23 am</td><td>Monica Alvarez</td><td>(989) 555-0113</td><td>248-436-3443</td><td>2:49</td><td>200</td><td>200</td><td>Mike Johnson</td><td>1:52</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 08:16 am</td><td>Leif Hendricksen</td><td>517-555-0162</td><td>(313) 995-9080</td><td>8:17</td><td>200</td><td>200</td><td>Mike Johnson</td><td>2:27</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`
+],
+"201": [
+`<tr><td>Today, 1:46 pm</td><td>Tucker Jones</td><td>(989) 555-0128</td><td>248-436-3443</td><td>6:17</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>1:28</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 11:41 am</td><td>Elizabeth Li</td><td>(313) 555-8471</td><td>(313) 995-9080</td><td>1:23</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>2:17</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 08:08 am</td><td>Coco LaBelle</td><td>(989) 555-0672</td><td>248-436-3443</td><td>0:22</td><td>201</td><td>201</td><td>Cathy Thomas</td><td>5:55</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`
+],
+"202": [
+`<tr><td>Today, 1:35 pm</td><td>Jack Burton</td><td>(517) 555-0148</td><td>(313) 995-9080</td><td>0:42</td><td>202</td><td>202</td><td>Jake Lee</td><td>7:22</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 10:58 am</td><td>Lola Turner</td><td>517-555-0170</td><td>248-436-3449</td><td>4:47</td><td>202</td><td>202</td><td>Jake Lee</td><td>1:24</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 1:26 pm</td><td>Carlos Riviera</td><td>(517) 555-0177</td><td>248-436-3449</td><td>3:52</td><td>202</td><td>202</td><td>Jake Lee</td><td>1:53</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 11:58 am</td><td>Mark Sanchez</td><td>989-555-0213</td><td>(313) 995-9080</td><td>4:29</td><td>202</td><td>202</td><td>Jake Lee</td><td>2:47</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`
+],
+"203": [
+`<tr><td>Today, 1:21 pm</td><td>John Travers</td><td>810-555-0192</td><td>(313) 995-9080</td><td>2:27</td><td>203</td><td>203</td><td>Bob Andersen</td><td>9:41</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 11:58 am</td><td>Freddie Travis</td><td>800-649-2907</td><td>(313) 995-9080</td><td>3:48</td><td>203</td><td>203</td><td>Bob Andersen</td><td>21:16</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`
+],
+"204": [
+`<tr><td>Today, 12:06 pm</td><td>Thomas Lee</td><td>517-555-0157</td><td>248-436-3443</td><td>1:21</td><td>204</td><td>204</td><td>Brittany Lawrence</td><td>3:53</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`
+],
+"205": [
+`<tr><td>Today, 1:37 pm</td><td>Maya Brooks</td><td>(517) 555-0126</td><td>248-436-3449</td><td>1:01</td><td>205</td><td>205</td><td>Alex Roberts</td><td>2:05</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 11:18 am</td><td>Sarah Patel</td><td>(248) 555-0196</td><td>(313) 995-9080</td><td>2:22</td><td>205</td><td>205</td><td>Alex Roberts</td><td>17:29</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 08:42 am</td><td>Alexander Chen</td><td>(517) 555-0122</td><td>(313) 995-9080</td><td>4:24</td><td>205</td><td>205</td><td>Alex Roberts</td><td>7:42</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 1:59 pm</td><td>Harper Green</td><td>(947) 555-0179</td><td>248-436-3447</td><td>1:08</td><td>205</td><td>205</td><td>Alex Roberts</td><td>3:11</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`
+],
+"206": [
+`<tr><td>Today, 1:41 pm</td><td>Liam Nguyen</td><td>(810) 555-0100</td><td>248-436-3449</td><td>5:29</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:06</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 09:56 am</td><td>Rory Davis</td><td>(313) 555-0179</td><td>(313) 995-9080</td><td>1:01</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:17</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 11:22 am</td><td>JR Knight</td><td>248-555-0144</td><td>248-436-3443</td><td>3:49</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:35</td><td>Term: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 09:56 am</td><td>Rory Davis</td><td>313-555-0179</td><td>(313) 995-9080</td><td>1:01</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>8:17</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 09:29 am</td><td>Tanya Roberts</td><td>313-555-3443</td><td>248-436-3443</td><td>3:47</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>0:57</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`,
+`<tr><td>Today, 1:24 pm</td><td>Martin Smith</td><td>800-909-5384</td><td>(313) 995-9080</td><td>4:11</td><td>206</td><td>206</td><td>Mark Sanchez</td><td>4:22</td><td>Orig: Bye</td><td>Connect</td><td class="cvas-action-cell">${actionIcons}</td></tr>`
+],
+"207": []
+});
+
+
+Object.assign(g.CVAS_CALLS_OUTBOUND_BY_AGENT, {
+  "200": [
+    outboundRow({
+      time: 'Today, 9:26 pm',
+      callerNum: '(810) 555-0112',
+      dnis: '(810) 555-0112',
+      ext: '200',
+      agentName: 'Mike Johnson',
+      talk: '17:20',
+      release: 'Orig: Bye'
+    })
+  ],
+  "201": [
+    outboundRow({
+      time: 'Today, 9:10 pm',
+      callerNum: '(517) 555-0170',
+      dnis: '(517) 555-0170',
+      ext: '201',
+      agentName: 'Cathy Thomas',
+      talk: '11:33',
+      release: 'Orig: Bye'
+    })
+  ],
+  "202": [
+    outboundRow({
+      time: 'Today, 9:30 pm',
+      callerNum: '(248) 555-0191',
+      dnis: '(248) 555-0191',
+      ext: '202',
+      agentName: 'Jake Lee',
+      talk: '27:22',
+      release: 'Orig: Bye'
+    })
+  ],
+  "203": [
+    outboundRow({
+      time: 'Today, 9:19 pm',
+      callerNum: '(313) 555-0179',
+      dnis: '(313) 555-0179',
+      ext: '203',
+      agentName: 'Bob Andersen',
+      talk: '05:12',
+      release: 'Term: Bye'
+    })
+  ],
+  "204": [],
+  "205": [
+    outboundRow({
+      time: 'Today, 9:53 pm',
+      callerNum: '(248) 555-0110',
+      dnis: '(248) 555-0110',
+      ext: '205',
+      agentName: 'Alex Roberts',
+      talk: '02:36',
+      release: 'Orig: Bye'
+    })
+  ],
+  "206": [
+    outboundRow({
+      time: 'Today, 9:15 pm',
+      callerNum: '(989) 555-0140',
+      dnis: '(989) 555-0140',
+      ext: '206',
+      agentName: 'Mark Sanchez',
+      talk: '06:05',
+      release: 'Term: Bye'
+    })
+  ],
+  "207": [
+    outboundRow({
+      time: 'Today, 9:59 pm',
+      callerNum: '(517) 555-0162',
+      dnis: '(517) 555-0162',
+      ext: '207',
+      agentName: 'John Smith',
+      talk: '01:53',
+      release: 'Term: Bye'
+    })
+  ]
+});
+
+
+
+
+  // === Headers ===
+  function mapHeaders(table) {
+    const ths = table.querySelectorAll('thead th');
+    const colMap = {};
+    ths.forEach((th, idx) => {
+      const txt = th.textContent.trim().toUpperCase();
+      if (txt === 'CH') colMap.CH = idx;
+      if (txt === 'TT') colMap.TT = idx;
+      if (txt === 'ATT') colMap.ATT = idx;
+      if (txt === 'AHT') colMap.AHT = idx;
+    });
+    return { colMap };
+  }    
+
+  function getAgentStatTitle(code) {
+    const titles = {
+      'CH': 'Calls Handled',
+      'TT': 'Talk Time',  
+      'ATT': 'Average Talk Time',
+      'AHT': 'Average Handle Time'
+    };
+    return titles[code] || code;
+  }
+
+  function timeToSeconds(t) {
+    const parts = t.split(':').map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return null;
+  }
+
+
+  function setSort(td, code, v) {
+    const n = Number(v);
+    if (!Number.isNaN(n)) { td.setAttribute('data-order', String(n)); return; }
+    if (code === 'ATT' || code === 'TT' || code === 'AHT') {
+      const s = timeToSeconds(v);
+      if (s != null) td.setAttribute('data-order', String(s));
+    }
+  }  
+
+ function outboundRow({ time, callerNum, dnis, ext, agentName, talk, release }) {
+  return `<tr data-dir="outbound">
+    <td>${time}</td>
+    <td>—</td>                              <!-- Caller Name (N/A) -->
+    <td>${callerNum}</td>                   <!-- Caller Number -->
+    <td>${dnis}</td>                        <!-- DNIS -->
+    <td>0:00</td>                           <!-- Time in Queue (N/A) -->
+    <td>${ext}</td>                         <!-- Ext -->
+    <td>${ext}</td>                         <!-- Agent Phone (mirror ext) -->
+    <td>${agentName}</td>                   <!-- Agent Name -->
+    <td>${talk}</td>                        <!-- Agent Time (talk) -->
+    <td>${release}</td>                     <!-- Agent Release Reason -->
+    <td>Outbound</td>                       <!-- Queue Release Reason -->
+    <td class="cvas-action-cell">${actionIcons}</td> <!-- Actions -->
+  </tr>`;
+}
+   
+
+// === Agent Details - Replacement Pattern (like queue stats) ===
+function buildAgentDetailsSrcdoc(agentExt, stat, rowsHTML) {
+  const statTitle = getAgentStatTitle(stat);
+  const agentStatsDownload = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/download-solid-full.svg';
+  const agentStatsListen = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/speakericon.svg';
+  const agentStatsCradle = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/transcript.svg';
+  const agentStatsNotes = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/newspaper-regular-full.svg';
+
+  return `<!doctype html><html><head><meta charset="utf-8">
+<style>
+  /* your existing iframe styles */
+  body { font: 13px/1.428 Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
+  .cv-agent-header { /* ... */ }
+  .cv-agent-table { width: 100%; max-width: 100%; height: auto; border-collapse: collapse; margin: 13px 0; box-sizing: border-box; overflow-x: hidden; table-layout: auto; }
+  .cv-agent-table th, .cv-agent-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #eee; }
+  .cv-agent-table th { background: #f8f9fa; color: #004a9b; font-weight: 600; border-bottom: 1px solid #ddd; }
+  .cv-agent-table tr:hover { background-color: #f3f3f3; }
+
+  /* === INSERT THESE NEW RULES INSIDE THE IFRAME STYLE === */
+  .cv-agent-table thead th:last-child { min-width: 140px; }   /* keep actions column wide enough */
+
+  td.cvas-action-cell{
+    white-space: nowrap;              /* stop vertical wrapping */
+    display: inline-flex;             /* lay icons out horizontally */
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* rounded button wrappers you use in the iframe */
+  .cvqs-icon-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%;
+    background:#fff; border:1px solid #dcdcdc; margin:3px; cursor:pointer;
+  }
+  .cvqs-icon-btn img{
+    width:14px; height:14px; opacity:.35; transition:opacity .2s;
+    vertical-align: middle;
+  }
+  .cvqs-icon-btn:hover img, tr:hover .cvqs-icon-btn img{ opacity:1; }
+
+  /* some themes set table imgs to block; force inline */
+  .cv-agent-table img{ display:inline-block; vertical-align:middle; }
+</style>
+</head><body>
+  <div class="cv-agent-header">
+    <button class="cv-agent-back" onclick="parent.__cvAgentRestore && parent.__cvAgentRestore()">← Back</button>
+    <div style="flex: 1;">
+      <h3 class="cv-agent-title">Agent ${agentExt} - ${statTitle}</h3>
+      <div class="cv-agent-subtitle">Today, 12:00 AM - 11:59 PM</div>
+    </div>
+  </div>
+
+  <table class="cv-agent-table">
+    <thead>
+      <tr>
+        <th>Call Time</th><th>Caller Name</th><th>Caller Number</th><th>DNIS</th>
+         <th>Time in Queue</th><th>Agent Extension</th><th>Agent Phone</th>
+         <th>Agent Name</th><th>Agent Time</th><th>Agent Release Reason</th>
+         <th>Queue Release Reason</th><th></th> <!-- keep this blank TH -->
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHTML}
+    </tbody>
+  </table>
+
+<script>
+// Add action icons to each row
+document.querySelectorAll('tbody tr').forEach(tr => {
+  const actionCell = tr.querySelector('td.cvas-action-cell');
+  if (actionCell) {
+    actionCell.innerHTML = \`
+     <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Download" title="Download" data-icon="download">
+    <img src="${agentStatsDownload}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Listen" title="Listen" data-icon="listen">
+    <img src="${agentStatsListen}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Cradle to Grave" title="Cradle to Grave" data-icon="cradle">
+    <img src="${agentStatsCradle}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Edit Notes" title="Edit Notes" data-icon="notes">
+    <img src="${agentStatsNotes}" alt="">
+  </span>
+    \`;
+  }
+});
+
+// Handle secondary modals
+function openModal(action) {
+  if (parent.openAgentCradleModal && action === 'cradle') {
+    parent.openAgentCradleModal('\${agentExt}', event.target.closest('tr'));
+  } else if (parent.openAgentNotesModal && action === 'notes') {
+    parent.openAgentNotesModal('\${agentExt}', event.target.closest('tr'));
+  } else if (parent.openAgentListenModal && action === 'listen') {
+    parent.openAgentListenModal('\${agentExt}', event.target.closest('tr'));
+  } else if (action === 'download') {
+    console.log('[CVAS] Download action for agent \${agentExt}');
+  }
+}
+
+// Esc to close
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && parent.__cvAgentRestore) parent.__cvAgentRestore();
+});
+
+// Handle clicks on the action buttons (inside the iframe)
+const table = document.querySelector('.cv-agent-table');
+table.addEventListener('click', (e) => {
+  const btn = e.target.closest('.cvqs-icon-btn');
+  if (!btn) return;
+  const action = btn.dataset.icon;
+  const tr = btn.closest('tr');
+
+  if (action === 'cradle' && parent.openAgentCradleModal) {
+    parent.openAgentCradleModal('${agentExt}', tr);
+  } else if (action === 'notes' && parent.openAgentNotesModal) {
+    parent.openAgentNotesModal('${agentExt}', tr);
+  } else if (action === 'listen' && parent.openAgentListenModal) {
+  parent.openAgentListenModal('${agentExt}', tr, btn);
+  } else if (action === 'download') {
+    console.log('[CVAS] Download for agent ${agentExt}');
+  }
+});
+  </script>
+</body></html>`;
+}
+
+function openAgentDetails(agentExt, stat) {
+
+// Use Agent Stats container instead of Queue Stats container
+const iframeContainer = document.querySelector('#modal-body-reports');
+if (!iframeContainer) {
+  console.warn('[CVAS] Could not find #modal-body-reports container for agent details');
+  return;
+}
+
+  // --- UNLOCK HOST CONTAINER (ADD THIS BLOCK) ---
+  // Make the host div behave like a full-page area instead of a tiny scroller
+  iframeContainer.style.height    = 'auto';
+  iframeContainer.style.maxHeight = 'none';
+  iframeContainer.style.overflow  = 'visible';
+  iframeContainer.style.padding   = '0';
+
+  // Some themes add overflow to the parent wrapper—relax that too
+  const scrollerParent = iframeContainer.parentElement;
+  if (scrollerParent) scrollerParent.style.overflow = 'visible';
+
+  // One-time CSS override (safe to call multiple times)
+  if (!document.getElementById('cvas-unlock-reports-css')) {
+    const unlock = document.createElement('style');
+    unlock.id = 'cvas-unlock-reports-css';
+    unlock.textContent = `
+      #modal-body-reports{max-height:none!important;overflow:visible!important;height:auto!important}
+      #modal-body-reports .table-responsive,
+      #modal-body-reports .scrollable{overflow:visible!important}
+    `;
+    document.head.appendChild(unlock);
+  }
+  // --- END UNLOCK HOST CONTAINER ---  
+
+  // Get call data for this agent
+  const inbound = window.top.CVAS_CALLS_INBOUND_BY_AGENT[agentExt] || [];
+  const outbound = window.top.CVAS_CALLS_OUTBOUND_BY_AGENT[agentExt] || [];
+  const showOutbound = stat === 'AHT';
+  const rows = showOutbound ? inbound.concat(outbound) : inbound;
+  const rowsHTML = rows.join('');
+
+  // Store original content for restoration
+  if (!window.__cvAgentOriginalContent) {
+    window.__cvAgentOriginalContent = iframeContainer.innerHTML;
+  }
+
+  // Build and inject iframe
+  const iframe = document.createElement('iframe');
+  iframe.id = 'cv-agent-details-iframe';
+  iframe.style.cssText = 'border: none; width: 100%; height: 100%; display: block;';
+  iframe.srcdoc = buildAgentDetailsSrcdoc(agentExt, stat, rowsHTML);
+
+  // Replace container content
+  iframeContainer.innerHTML = '';
+  iframeContainer.appendChild(iframe);
+// --- FIT IFRAME TO VIEWPORT (ADD THIS BLOCK) ---
+  function sizeIframe() {
+    // Top of iframe relative to viewport
+    const top = iframe.getBoundingClientRect().top;
+    // Leave a little bottom margin (24px)
+    const available = Math.max(480, window.innerHeight - top - 24);
+    iframe.style.height = available + 'px';
+  }
+  sizeIframe();
+  window.addEventListener('resize', sizeIframe);
+  // --- END FIT IFRAME TO VIEWPORT ---
+
+  iframe.onload = () => {
+    const tbody = iframe.contentDocument.querySelector('.cvas-agent-table tbody');
+    if (tbody) addAgentModalIcons(tbody);
+  };
+
+  // Setup restoration function
+  // Setup restoration function (OUTER PAGE)
+window.__cvAgentRestore = () => {
+  if (!window.__cvAgentOriginalContent) return;
+
+  // Put the original Agent Stats HTML back
+  iframeContainer.innerHTML = window.__cvAgentOriginalContent;
+
+  // 🔁 Re-bind the stat links we lost when innerHTML replaced the table
+  const rewire = () => {
+    const table = document.querySelector('#modal_stats_table');
+    if (table && table.tBodies[0]?.rows?.length) {
+      injectAgentStats(table);   // recreates <a.cvas-stat-link> + click handlers
+      return true;
+    }
+    return false;
+  };
+
+  // Try immediately; if rows render async, poll briefly
+  if (!rewire()) {
+    let tries = 0;
+    const maxTries = 10;
+    const timer = setInterval(() => {
+      tries++;
+      if (rewire() || tries >= maxTries) clearInterval(timer);
+    }, 250);
+  }
+
+  // cleanup
+  delete window.__cvAgentOriginalContent;
+  delete window.__cvAgentRestore;
+  window.removeEventListener('resize', sizeIframe);
+};
+
+}
+
+// === Expose function to TOP window for iframe access ===
+window.top.openAgentDetails = openAgentDetails;
+
+  // === Linkify Utility ===
+ // === Linkify Utility ===
+function linkify(td, ext, stat, value) {
+  if (value === 0 || value === '00:00' || value == null) {
+    td.textContent = value;
+    return;
+  }
+
+  td.innerHTML = '';
+  const a = document.createElement('a');
+  a.href = '#';
+  a.className = 'cvas-stat-link';
+  a.textContent = value;
+  a.style.fontWeight = 'bold';
+  a.style.textDecoration = 'underline';
+  a.dataset.ext = ext;
+  a.dataset.stat = stat;
+
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    window.top.openAgentDetails(ext, stat);
+  });
+
+  td.appendChild(a);
+}
+
+
+// === Inject Logic ===
+function injectActionIcons(tr) {
+  // Use the pre-allocated action cell; fallback to create if missing
+  let td = tr.querySelector('td.cvqs-action-cell');
+  if (!td) {
+    td = document.createElement('td');
+    td.className = 'cvqs-action-cell';
+    tr.appendChild(td);
+  }
+
+  td.innerHTML = `
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Download" title="Download" data-icon="download">
+    <img src="${agentStatsDownload}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Listen" title="Listen" data-icon="listen">
+    <img src="${agentStatsListen}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Cradle to Grave" title="Cradle to Grave" data-icon="cradle">
+    <img src="${agentStatsCradle}" alt="">
+  </span>
+  <span role="button" tabindex="0" class="cvqs-icon-btn" aria-label="Edit Notes" title="Edit Notes" data-icon="notes">
+    <img src="${agentStatsNotes}" alt="">
+  </span>
+`;
+
+}
+
+function injectAgentStats(table) {
+  const { colMap } = mapHeaders(table);
+  const rows = table.tBodies[0]?.rows || [];
+  let wrote = 0;
+
+  Array.from(rows).forEach(tr => {
+    const ext = tr.cells[1]?.textContent?.trim();
+    const data = CVAS_DATA[ext];
+    if (!data) return;
+
+    Object.entries(colMap).forEach(([key, idx]) => {
+      const td = tr.cells[idx];
+      const val = data[key];
+      if (td) {
+        linkify(td, ext, key, val);
+        wrote++;
+      }
+    });
+  });
+
+  console.log(`[CVAS] Linked and injected ${wrote} stat cell(s)`);
+}
+
+// === Wait for Table to be Ready ===
+const tryInject = () => {
+  const table = document.querySelector('#modal_stats_table');
+  if (!table || !table.tBodies[0]?.rows.length) return false;
+  injectAgentStats(table);
+  return true;
+};
+
+let tries = 0;
+const maxTries = 20;
+const t = setInterval(() => {
+  tries++;
+  if (tryInject() || tries >= maxTries) clearInterval(t);
+}, 400);
+
+})(); // CLOSE FIRST IIFE
+
+
+
+// === Add Icons Per Row ===
+function addAgentModalIcons(tbody) {
+  const icons = [
+    agentStatsDownload,
+    agentStatsListen,
+    agentStatsCradle,
+    agentStatsNotes
+  ];
+
+  Array.from(tbody.querySelectorAll('.cvas-action-cell')).forEach(td => {
+    td.innerHTML = icons
+      .map(src => `<img src="${src}" class="cvas-icon" />`)
+      .join(' ');
+  });
+}
+
+
+
+// ==== Agent CTG (queue-style) — overlay anchored inside #cvas-agent-modal ====
+
+(function ensureAgentCtgStyles(){
+  if (document.getElementById('cvas-ctg-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'cvas-ctg-styles';
+  s.textContent = `
+    /* overlay sits inside the agent modal so it never escapes the page chrome */
+    #cvas-ctg-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:9999;
+      display:flex;align-items:flex-start;justify-content:center;padding:24px;}
+    #cvas-ctg-modal{background:#fff;border-radius:8px;width:min(880px,96%);
+      max-height:calc(100vh - 96px);overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.25);}
+    .cvas-ctg-header{display:flex;align-items:center;justify-content:space-between;
+      padding:10px 16px;border-bottom:1px solid #e5e8eb;background:#fff;position:sticky;top:0;z-index:2;}
+    .cvas-ctg-title{font-weight:700;font-size:16px;color:#000;letter-spacing:.2px;}
+    .cvas-ctg-close{background:transparent;border:0;font-size:20px;line-height:1;cursor:pointer;padding:4px 8px;opacity:.7;}
+    .cvas-ctg-close:hover{opacity:1;}
+    .cvas-ctg-body{padding:12px 8px 18px 8px;}
+    .cvas-ctg-item{display:grid;grid-template-columns:100px 28px 1fr;align-items:flex-start;gap:10px;padding:8px 12px;}
+    .cvas-ctg-time{color:#111;font-weight:700;}
+    .cvas-ctg-subtime{color:#777;font-size:12px;margin-top:2px;}
+    .cvas-ctg-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;}
+    .cvas-ctg-icon img{width:18px;height:18px;background:#f2f3f5;border:1px solid #e1e4e8;border-radius:50%;padding:3px;box-sizing:content-box;}
+    .cvas-ctg-text{color:#111;}
+    .cvas-ctg-sub{color:#777;font-size:12px;margin-top:2px;}
+  `;
+  document.head.appendChild(s);
+})();
+
+function _ctgTxt(n){ return (n?.textContent || '').replace(/\s+/g,' ').trim(); }
+function _ctgTimeParts(date){
+  const pad = n => String(n).padStart(2,'0');
+  let h = date.getHours(), am='AM'; if (h>=12){am='PM'; if(h>12) h-=12;} if(h===0) h=12;
+  return `${h}:${pad(date.getMinutes())}:${pad(date.getSeconds())} ${am}`;
+}
+function _ctgTimeline(start=new Date()){
+  let t = new Date(start.getTime()); let ms = 0;
+  const bump = inc => { ms+=inc; t = new Date(start.getTime()+ms); };
+  const stamp = () => ({ time:_ctgTimeParts(t), subtime: ms ? `+${ms}ms` : '' });
+  return { bump, stamp };
+}
+
+/* Try to read values regardless of which agent-details schema is active */
+function _readAgentRowFacts(tr){
+  const c = tr?.cells || [];
+  const facts = { callerName:'', callerNum:'', agentExt:'', agentName:'', queueRel:'' };
+
+  if (c.length >= 12) { // queue-like schema
+    facts.callerName = _ctgTxt(c[1]);
+    facts.callerNum  = _ctgTxt(c[2]);
+    facts.agentExt   = _ctgTxt(c[5]);
+    facts.agentName  = _ctgTxt(c[7]);
+    facts.queueRel   = _ctgTxt(c[10]);
+  } else {            // compact agent schema (Time, Caller, Phone, Dialed, Duration, Queue, Result, Actions)
+    facts.callerName = _ctgTxt(c[1]);
+    facts.callerNum  = _ctgTxt(c[2]);
+    facts.agentExt   = '';                 // not present
+    facts.agentName  = '';                 // not present
+    facts.queueRel   = _ctgTxt(c[6] || c[5] || ''); // Result/Queue
+  }
+  return facts;
+}
+
+// Icons (namespaced to avoid collisions with queue code)
+const CVAS_ICON_PHONE     = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phone%20dialing.svg';
+const CVAS_ICON_ANSWER    = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phone-solid-full.svg';
+const CVAS_ICON_HANG      = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phone_disconnect_fill_icon.svg';
+const CVAS_ICON_DIAL      = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/dialpad%20icon.svg';
+const CVAS_ICON_ELLIPS    = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/ellipsis-solid-full.svg';
+const CVAS_ICON_AGENTRING = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/phoneringing.svg';
+
+const CTG_ICONS = {
+  phone:     `<img src="${CVAS_ICON_PHONE}"     alt="">`,
+  answer:    `<img src="${CVAS_ICON_ANSWER}"    alt="">`,
+  hang:      `<img src="${CVAS_ICON_HANG}"      alt="">`,
+  dial:      `<img src="${CVAS_ICON_DIAL}"      alt="">`,
+  ellipsis:  `<img src="${CVAS_ICON_ELLIPS}"    alt="">`,
+  agentring: `<img src="${CVAS_ICON_AGENTRING}" alt="">`,
+};
+
+/* Build the event list to resemble your example */
+function _buildAgentCtgEvents(tr){
+  const { callerName, callerNum, agentExt, agentName, queueRel } = _readAgentRowFacts(tr);
+  const { bump, stamp } = _ctgTimeline(new Date());
+  const ev = [];
+
+  // 1) inbound + timeframe
+  ev.push({ ...stamp(), icon:'phone',    text:`Inbound call from ${callerNum}${callerName ? ` (${callerName})` : ''}`, sub:'STIR: Verified' }); bump(2);
+  ev.push({ ...stamp(), icon:'ellipsis', text:'The currently active time frame is Daytime' }); bump(135);
+
+  // 2) AA + selection (to match your screenshot vibe)
+  ev.push({ ...stamp(), icon:'dial',     text:'Connected to Auto Attendant Daytime 700' }); bump(23);
+  ev.push({ ...stamp(), icon:'ellipsis', text:'Selected 1' });                               bump(14);
+  ev.push({ ...stamp(), icon:'ellipsis', text:'The currently active time frame is Daytime' }); bump(1000);
+
+  // 3) queue connect
+  ev.push({ ...stamp(), icon:'ellipsis', text:'Connected to Call Queue Main Routing 300' }); bump(286);
+
+  // 4) ring cascade
+  const roster = [
+    'Mike Johnson (200)','Cathy Thomas (201)','Jake Lee (202)','Bob Andersen (203)','Brittany Lawrence (204)',
+    'Alex Roberts (205)','Mark Sanchez (206)','John Smith (207)','Emily Johnson (208)','Michael Williams (209)','Jessica Brown (210)'
+  ];
+  const primary = (agentName ? `${agentName}${agentExt ? ` (${agentExt})` : ''}` : '') || (agentExt ? `Agent (${agentExt})` : '');
+  const seen = new Set(); const cascade = [];
+  if (primary) { cascade.push(primary); seen.add(primary.toLowerCase()); }
+  roster.forEach(n => { if (!seen.has(n.toLowerCase())) cascade.push(n); });
+
+  for (let i=0; i<Math.min(cascade.length, 11); i++){
+    ev.push({ ...stamp(), icon:'agentring', text:`${cascade[i]} is ringing` });
+    bump(286 + i*143);
+  }
+
+  // 5) answered + hang
+  ev.push({ ...stamp(), icon:'answer', text:'Call answered by Agent' });
+  bump(120000);
+  if (/v ?mail|voice ?mail/i.test(queueRel)) {
+    ev.push({ ...stamp(), icon:'ellipsis', text:'Sent to Voicemail' });
+  } else if (/speakaccount/i.test(queueRel)) {
+    ev.push({ ...stamp(), icon:'ellipsis', text:'Routed to SpeakAccount' });
+  } else {
+    ev.push({ ...stamp(), icon:'hang', text:`${callerNum || 'Caller'} hung up` });
+  }
+  return ev;
+}
+
+/* Drop-in replacement — called from the iframe via parent.openAgentCradleModal(ext, row) */
+function openAgentCradleModal(agentExt, row){
+  const host = document.getElementById('cvas-agent-modal') || document.body;
+
+  // clean any existing overlay first (prevents duplicates)
+  host.querySelector('#cvas-ctg-overlay')?.remove();
+
+  const events = _buildAgentCtgEvents(row);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'cvas-ctg-overlay';
+  overlay.innerHTML = `
+    <div id="cvas-ctg-modal" role="dialog" aria-modal="true" aria-labelledby="cvas-ctg-title">
+      <div class="cvas-ctg-header">
+        <span id="cvas-ctg-title" class="cvas-ctg-title">Cradle To Grave</span>
+        <button class="cvas-ctg-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="cvas-ctg-body">
+        ${events.map(ev => `
+          <div class="cvas-ctg-item">
+            <div class="cvas-ctg-time">
+              ${ev.time}
+              ${ev.subtime ? `<div class="cvas-ctg-subtime">${ev.subtime}</div>` : ``}
+            </div>
+            <div class="cvas-ctg-icon">${CTG_ICONS[ev.icon] || ''}</div>
+            <div class="cvas-ctg-text">
+              ${ev.text}
+              ${ev.sub ? `<div class="cvas-ctg-sub">${ev.sub}</div>` : ``}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  const close = () => overlay.remove();
+  overlay.addEventListener('click', e => { if (e.target.id === 'cvas-ctg-overlay') close(); });
+  overlay.querySelector('.cvas-ctg-close').addEventListener('click', close);
+  document.addEventListener('keydown', function onEsc(ev){
+    if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', onEsc); }
+  });
+
+// --- scope overlay to the Agent Stats host so it sits over the iframe ---
+const ctasHost = document.querySelector('#modal-body-reports') || document.body;
+if (getComputedStyle(ctasHost).position === 'static') ctasHost.style.position = 'relative';
+
+// anchor overlay inside the host (not the viewport)
+overlay.style.position = 'absolute';
+overlay.style.inset = '0';
+overlay.style.zIndex = '9999';
+
+ctasHost.appendChild(overlay);
+// ⬇️ ADD THIS LINE to close the function
+}    
+
+// ==== /Agent CTG ====
+
+
+// --- Agent Notes POPover (matches queue style) ---
+const AGENT_NOTES_REASONS = {
+  'Inbound Sales' : ['Existing customer question', 'Follow up', 'Referral'],
+  'Outbound Sales': ['Cold Call', 'Follow-up']
+};
+
+function openAgentNotesModal(agentExt, rowOrBtn) {
+  // If a popover is already open, remove it first
+  document.getElementById('agent-notes-popover')?.remove();
+
+  // Figure out the anchor button (we accept either the row or the button)
+  let anchorBtn = null;
+  if (rowOrBtn?.classList?.contains('cvqs-icon-btn')) {
+    anchorBtn = rowOrBtn;
+  } else if (rowOrBtn?.querySelector) {
+    anchorBtn = rowOrBtn.querySelector('.cvqs-icon-btn[data-icon="notes"]');
+  }
+  if (!anchorBtn) return;
+
+  // Build the popover container
+  const pop = document.createElement('div');
+  pop.id = 'agent-notes-popover';
+  pop.setAttribute('role', 'dialog');
+  pop.setAttribute('aria-label', 'Notes');
+  Object.assign(pop.style, {
+    position: 'fixed',
+    top: '0px',
+    left: '0px',
+    width: '340px',
+    maxWidth: '92vw',
+    background: '#fff',
+    border: '1px solid #cfd3d7',
+    borderRadius: '8px',
+    boxShadow: '0 8px 24px rgba(0,0,0,.18)',
+    zIndex: '2147483647',
+    padding: '12px',
+    visibility: 'hidden'
+  });
+
+  // Content
+  pop.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <strong style="font-size:14px">Notes</strong>
+      <button id="anp-close" aria-label="Close" style="background:none;border:0;font-size:18px;cursor:pointer;line-height:1">&times;</button>
+    </div>
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:10px 12px;align-items:center">
+      <label for="anp-disposition" style="justify-self:end;font-weight:600">Disposition</label>
+      <select id="anp-disposition" style="padding:6px;border:1px solid #cfd3d7;border-radius:4px;">
+        <option value="">Select a Disposition</option>
+        <option>Inbound Sales</option>
+        <option>Outbound Sales</option>
+      </select>
+
+      <label for="anp-reason" style="justify-self:end;font-weight:600">Reason</label>
+      <select id="anp-reason" style="padding:6px;border:1px solid #cfd3d7;border-radius:4px;">
+        <option value="">Select a Disposition First</option>
+      </select>
+
+      <label for="anp-text" style="justify-self:end;font-weight:600">Notes</label>
+      <textarea id="anp-text" rows="4" style="width:100%;padding:.5px;border:.5px solid #cfd3d7;border-radius:4px;resize:vertical"></textarea>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button id="anp-cancel" class="cv-btn">Cancel</button>
+      <button id="anp-save" style="min-width:90px;padding:6px 12px;border:0;border-radius:4px;background:#006dcc;color:#fff;font-weight:700;cursor:pointer">Save</button>
+    </div>
+  `;
+
+  document.body.appendChild(pop);
+
+  // Init fields
+  const dispSel   = pop.querySelector('#anp-disposition');
+  const reasonSel = pop.querySelector('#anp-reason');
+  const notesTxt  = pop.querySelector('#anp-text');
+
+  function populateReasons(disp) {
+    reasonSel.innerHTML = '';
+    const opts = AGENT_NOTES_REASONS[disp] || [];
+    if (!opts.length) {
+      reasonSel.innerHTML = '<option value="">Select a Disposition First</option>';
+      return;
+    }
+    opts.forEach((label, i) => {
+      const o = document.createElement('option');
+      o.value = label; o.textContent = label;
+      if (i === 0) o.selected = true;
+      reasonSel.appendChild(o);
+    });
+  }
+  dispSel.value = 'Inbound Sales';
+  populateReasons('Inbound Sales');
+  notesTxt.value = '';
+
+  dispSel.onchange = () => populateReasons(dispSel.value);
+
+  // --- Position next to the icon (account for iframe position) ---
+  const iframe = document.getElementById('cv-agent-details-iframe');
+  const btnRect = anchorBtn.getBoundingClientRect();
+  const iframeRect = iframe ? iframe.getBoundingClientRect() : {left:0,top:0,right:window.innerWidth,bottom:window.innerHeight};
+  const anchorRect = {
+    left: iframeRect.left + btnRect.left,
+    right: iframeRect.left + btnRect.right,
+    top: iframeRect.top + btnRect.top,
+    bottom: iframeRect.top + btnRect.bottom
+  };
+
+  const boundsEl = document.getElementById('modal-body-reports') || document.body;
+  const box = boundsEl.getBoundingClientRect();
+  const gap = 8;
+
+  const rect = pop.getBoundingClientRect();
+  const pw = rect.width, ph = rect.height;
+
+  let left = (anchorRect.right + gap + pw <= box.right)
+    ? anchorRect.right + gap
+    : anchorRect.right - pw;
+
+  let top = (anchorRect.bottom + gap + ph <= box.bottom)
+    ? anchorRect.bottom + gap
+    : anchorRect.top - ph - gap;
+
+  left = Math.min(Math.max(left, box.left + gap), box.right - pw - gap);
+  top  = Math.min(Math.max(top,  box.top  + gap), box.bottom - ph - gap);
+
+  pop.style.left = `${left}px`;
+  pop.style.top  = `${top}px`;
+  pop.style.visibility = 'visible';
+
+  // Close helpers
+  const close = () => {
+    document.removeEventListener('click', onDocClick, true);
+    document.removeEventListener('keydown', onKeyDown, true);
+    pop.remove();
+  };
+  const onDocClick = (e) => {
+    if (pop.contains(e.target) || anchorBtn.contains(e.target)) return;
+    close();
+  };
+  const onKeyDown = (e) => { if (e.key === 'Escape') close(); };
+
+  document.addEventListener('click', onDocClick, true);
+  document.addEventListener('keydown', onKeyDown, true);
+
+  // Buttons
+  pop.querySelector('#anp-close').addEventListener('click', close);
+  pop.querySelector('#anp-cancel').addEventListener('click', close);
+  pop.querySelector('#anp-save').addEventListener('click', () => {
+    const payload = {
+      agent: agentExt,
+      disposition: dispSel.value || '',
+      reason:      reasonSel.value || '',
+      notes:       notesTxt.value || ''
+    };
+    console.log('[AgentNotesPopover] Saved', payload);
+    close();
+  });
+}
+
+
+// Inline "Listen" expander (no overlay modal)
+function openAgentListenModal(agentExt, row, btn) {
+  if (!row) return;
+  const doc = row.ownerDocument;          // iframe document
+
+  // ---- ensure the audio styles exist in the iframe ONCE ----
+  if (!doc.getElementById('cv-audio-styles')) {
+    const css = `
+      .cv-audio-row td { background:#f3f6f8; padding:10px 12px; border-top:0; }
+      .cv-audio-player { display:flex; align-items:center; gap:12px; }
+      .cv-audio-play { width:24px; height:24px; background:transparent; border:0; cursor:pointer; padding:0; }
+      .cv-audio-play img { width:16px; height:16px; opacity:.8; }
+      .cv-audio-time { font-weight:600; color:#333; }
+      .cv-audio-bar { flex:1; height:6px; background:#e0e0e0; border-radius:3px; position:relative; }
+      .cv-audio-bar-fill { position:absolute; left:0; top:0; bottom:0; width:0%; background:#9e9e9e; border-radius:3px; }
+      .cv-audio-icon { width:20px; height:20px; opacity:.6; }
+    `;
+    const style = doc.createElement('style');
+    style.id = 'cv-audio-styles';
+    style.textContent = css;
+    doc.head.appendChild(style);
+  }
+
+  // ---- toggle: if the next row is already an audio row, remove it ----
+  const next = row.nextElementSibling;
+  if (next && next.classList && next.classList.contains('cv-audio-row')) {
+    next.remove();
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    return;
+  }
+
+  // ---- build audio expander row (fake UI) ----
+  const colCount = row.cells.length; // span full width, including actions col
+  const audioTr = doc.createElement('tr');
+  audioTr.className = 'cv-audio-row';
+
+  const playIcon = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/play-solid-full.svg';
+  const listenIcon = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/speakericon.svg';
+
+  audioTr.innerHTML =
+    '<td colspan="' + colCount + '">' +
+      '<div class="cv-audio-player">' +
+        '<button class="cv-audio-play" aria-label="Play"><img src="' + playIcon + '" alt="Play"></button>' +
+        '<span class="cv-audio-time">0:00 / 0:00</span>' +
+        '<div class="cv-audio-bar"><div class="cv-audio-bar-fill" style="width:0%"></div></div>' +
+        '<img class="cv-audio-icon" src="' + listenIcon + '" alt="Listen">' +
+      '</div>' +
+    '</td>';
+
+  row.parentNode.insertBefore(audioTr, row.nextSibling);
+  if (btn) btn.setAttribute('aria-expanded', 'true');
+  audioTr.scrollIntoView({ block: 'nearest' });
+}
+
+
+
+// === AGENT MODAL COMPLETION - END ===
 
 
 
