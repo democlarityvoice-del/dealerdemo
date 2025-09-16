@@ -5370,67 +5370,65 @@ overlay.innerHTML = `
 }
 
   //  Event delegation so Notes (and others) always work after HTML swaps
-  modal.addEventListener('click', (e) => {
-    const btn = e.target.closest('.cvqs-icon-btn[data-icon]');
-    if (!btn || !modal.contains(btn)) return;
+ // === Event delegation so Notes, Listen, Cradle work after HTML is injected
+modal.addEventListener('click', (e) => {
+  const btn = e.target.closest('.cvqs-icon-btn[data-icon]');
+  if (!btn || !modal.contains(btn)) return;
 
-    const kind = btn.dataset.icon;
-    if (kind === 'notes') {
-      // uses your existing function defined above in this scope
-      openQueueNotesPopover(btn);
+  const kind = btn.dataset.icon;
+
+  if (kind === 'notes') {
+    openQueueNotesPopover(btn);
+    return;
+  }
+
+  if (kind === 'download') {
+    // Implement download if needed
+    return;
+  }
+
+  if (kind === 'listen') {
+    const tr   = btn.closest('tr');
+    const next = tr && tr.nextElementSibling;
+
+    // collapse if already open
+    if (next && next.classList && next.classList.contains('cv-audio-row')) {
+      next.remove();
+      btn.setAttribute('aria-expanded', 'false');
       return;
     }
-    if (kind === 'download') {
-      // no-op or your download action
-      return;
-    }
 
+    // close any others in this modal
+    modal.querySelectorAll('.cv-audio-row').forEach(r => r.remove());
 
-// === FIXED LISTEN BRANCH (no early return) ===
-    if (kind === 'listen') {
-      const tr   = btn.closest('tr');
-      const next = tr && tr.nextElementSibling;
+    const colCount = tr.children.length;
+    const audioTr  = document.createElement('tr');
+    audioTr.className = 'cv-audio-row';
 
-      // collapse if already open
-      if (next && next.classList && next.classList.contains('cv-audio-row')) {
-        next.remove();
-        btn.setAttribute('aria-expanded','false');
-        return;
-      }
-
-      // close any others in this modal
-      modal.querySelectorAll('.cv-audio-row').forEach(r => r.remove());
-
-      const colCount = tr.children.length;
-      const audioTr  = document.createElement('tr');
-      audioTr.className = 'cv-audio-row';
-
-      audioTr.innerHTML =
-        '<td colspan="'+colCount+'">' +
-          '<div class="cv-audio-player">' +
-            '<button class="cv-audio-play" aria-label="Play"></button>' +
-            '<span class="cv-audio-time">0:00 / 0:00</span>' +
-            '<div class="cv-audio-bar"><div class="cv-audio-bar-fill" style="width:0%"></div></div>' +
-            '<div class="cv-audio-right">' +
-              '<img class="cv-audio-icon" src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/speakericon.svg" alt="Listen">' +
-            '</div>' +
+    audioTr.innerHTML =
+      '<td colspan="'+colCount+'">' +
+        '<div class="cv-audio-player">' +
+          '<button class="cv-audio-play" aria-label="Play"></button>' +
+          '<span class="cv-audio-time">0:00 / 0:00</span>' +
+          '<div class="cv-audio-bar"><div class="cv-audio-bar-fill" style="width:0%"></div></div>' +
+          '<div class="cv-audio-right">' +
+            '<img class="cv-audio-icon" src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/speakericon.svg" alt="Listen">' +
           '</div>' +
-        '</td>';
+        '</div>' +
+      '</td>';
 
-      tr.parentNode.insertBefore(audioTr, tr.nextSibling);
-      btn.setAttribute('aria-expanded','true');
-      return;
-    }
+    tr.parentNode.insertBefore(audioTr, tr.nextSibling);
+    btn.setAttribute('aria-expanded', 'true');
+    return;
+  }
 
-if (kind === 'cradle') {
-  const tr = btn.closest('tr');
-  if (!tr) return;
-  cvqsOpenCtgModal(tr);
-  return;
-}
-
-
-  });
+  if (kind === 'cradle') {
+    const tr = btn.closest('tr');
+    if (!tr) return;
+    cvqsOpenCtgModal(tr);
+    return;
+  }
+});
 
 
 
