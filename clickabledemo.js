@@ -5035,6 +5035,62 @@ const rowsForQueue = getRowsForQueue(queueNameOnly, queueNumber);
       tr:hover .cvqs-icon-btn img {
         opacity: 1;
       }
+       
+      .cv-audio-row td {
+        background: #f3f6f8;
+        padding: 10px 12px;
+        border-top: 0;
+      }
+    .cv-audio-player {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .cv-audio-play {
+      width: 24px;
+     height: 24px;
+     background: transparent;
+     border: 0;
+     cursor: pointer;
+   }
+   .cv-audio-play:before {
+     content: '';
+     display: block;
+     width: 0;
+     height: 0;
+     border-left: 10px solid #333;
+     border-top: 6px solid transparent;
+     border-bottom: 6px solid transparent;
+   }
+   .cv-audio-time {
+     font-weight: 600;
+    color: #333;
+   }
+   .cv-audio-bar {
+     flex: 1;
+     height: 6px;
+     background: #e0e0e0;
+     border-radius: 3px;
+     position: relative;
+    }
+   .cv-audio-bar-fill {
+     position: absolute;
+     left: 0;
+     top: 0;
+     bottom: 0;
+     width: 0%;
+     background: #9e9e9e;
+     border-radius: 3px;
+    }
+   .cv-audio-right {
+     display: flex;
+     align-items: center;
+    gap: 12px;
+    }
+   .cv-audio-icon {
+     width: 20px;
+     height: 20px;
+     opacity: 0.6;
     </style>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
