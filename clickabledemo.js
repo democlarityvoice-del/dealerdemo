@@ -6723,9 +6723,9 @@ function openAgentListenModal(agentExt, row, btn) {
   const createWidget = (title, chartId) => {
       let widgetType = 'unknown';
       if (title.includes('Summary')) widgetType = 'summary';
-      else if (title.includes('Marketing')) widgetType = 'inbound';
+      else if (title.includes('Location')) widgetType = 'inbound';
       else if (title.includes('Outbound')) widgetType = 'outbound';
-      else if (title.includes('Employee')) widgetType = 'employee';
+      else if (title.includes('BDC')) widgetType = 'employee';
     
       const li = document.createElement('li');
       li.className = 'dashboard-widget cv-demo-chart-injected';
@@ -6792,8 +6792,8 @@ function openAgentListenModal(agentExt, row, btn) {
 
 
     container.appendChild(createWidget('Summary by Hour for Today', 'chart-summary'));
-    container.appendChild(createWidget('Inbound Calls This Week by Marketing Number', 'chart-inbound'));
-    container.appendChild(createWidget('Calls by Employee This Week', 'chart-employee'));
+    container.appendChild(createWidget('Inbound Calls This Week by Location', 'chart-inbound'));
+    container.appendChild(createWidget('Calls by BDC This Week', 'chart-employee'));
     container.appendChild(createWidget('Outbound Calls This Week', 'chart-outbound'));
 
     loadAndDrawCharts();
@@ -6817,10 +6817,10 @@ function openAgentListenModal(agentExt, row, btn) {
       container.innerHTML = '<div id="summary-chart-google" style="width:100%; height:400px;"></div>';
     
       const data = google.visualization.arrayToDataTable([
-          ['Hour', 'New Sales (301)', 'Existing Cust (302)', 'Billing (303)', 'Main Routing (300)'],
+          ['Hour', 'Service Queue (301)', 'Sales Queue (302)', 'Finance Queue (303)', 'Operator Queue (300)'],
           ['8am', 3, 0, 0, 0],
-          ['9am', 2, 3, 0, 0],       // Existing Cust visible here
-          ['10am', 3, 2, 1, 0],      // Shared slot (leave 0 for Main Routing)
+          ['9am', 2, 0, 3, 0],       // Existing Cust visible here
+          ['10am', 3, 1, 2, 0],      // Shared slot (leave 0 for Main Routing)
           ['11am', 4, 0, 1, 2],      // Add Main Routing here
           ['12pm', 1, 0, 0, 3],      // And again here
           ['1pm', 5, 0, 1, 0],
@@ -6898,13 +6898,13 @@ function openAgentListenModal(agentExt, row, btn) {
         // PIE CHART (Employee - real totals)
       const pieData = google.visualization.arrayToDataTable([
         ['Employee', 'Calls'],
-        ['Mike Johnson', 60],
-        ['Cathy Thomas', 42],
-        ['Jake Lee', 56],
-        ['Bob Andersen', 13],
-        ['Brittany Lawrence', 28],
-        ['Alex Roberts', 62],
-        ['Mark Sanchez', 29]
+        ['Abbey Palmer', 60],
+        ['Emma Johnson', 42],
+        ['Liam Turner', 56],
+        ['Mike Jones', 13],
+        ['Chad Sanders', 28],
+        ['Isabella Martinez', 62],
+        ['Bob Smith', 29]
       ]);
     
       new google.visualization.PieChart(document.getElementById('chart-employee'))
@@ -6914,20 +6914,20 @@ function openAgentListenModal(agentExt, row, btn) {
           pieHole: 0.4,
           is3D: true,
           colors: [
-              '#3366cc', // Mike - blue
-              '#dc3912', // Cathy - red
-              '#109618', // Jake - green
-              '#ff9900', // Bob - orange
-              '#990099', // Brittany - purple
-              '#0099c6', // Alex - cyan
-              '#dd4477'  // Mark - pink
+              '#3366cc', // Abbey - blue
+              '#dc3912', // Emma - red
+              '#109618', // Liam - green
+              '#ff9900', // Mike - orange
+              '#990099', // Chad - purple
+              '#0099c6', // Isabella- cyan
+              '#dd4477'  // Bob - pink
           ]
         });
 
 
         // OUTBOUND CHART (Fixed version using Google Charts only)
       const outboundData = google.visualization.arrayToDataTable([
-        ['Day','Mike Johnson','Cathy Thomas','Jake Lee','Bob Andersen','Brittany Lawrence','Alex Roberts','Mark Sanchez'],
+        ['Day','Abbey Palmer','Emma Johnson','Liam Turner','Mike Jones','Chad Sanders','Isabella Martinez','Bob Smith'],
         ['Sun', 2, 1, 2, 0, 1, 2, 1],
         ['Mon',10, 7, 9, 2, 4,10, 5],
         ['Tue',12, 8,10, 2, 4,12, 5],
@@ -6987,16 +6987,16 @@ function openAgentListenModal(agentExt, row, btn) {
     
             <tbody>
               <tr>
-                <td style="padding: 4px 8px;">Main Routing (300)</td><td>0</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                <td style="padding: 4px 8px;">Operator Queue (300)</td><td>0</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td>
               </tr>
               <tr>
-                <td style="padding: 4px 8px;">New Sales (301)</td><td>3</td><td>2</td><td>3</td><td>4</td><td>1</td><td>5</td><td>3</td>
+                <td style="padding: 4px 8px;">Service Queue (301)</td><td>3</td><td>2</td><td>2</td><td>4</td><td>1</td><td>5</td><td>3</td>
               </tr>
               <tr>
-                <td style="padding: 4px 8px;">Existing Customer (302)</td><td>0</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                <td style="padding: 4px 8px;">Sales Queue (302)</td><td>0</td><td>3</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td>
               </tr>
               <tr>
-                <td style="padding: 4px 8px;">Billing (303)</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td>
+                <td style="padding: 4px 8px;">Finance Queue (303)</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td>
               </tr>
             </tbody>
           </table>
@@ -7098,9 +7098,9 @@ function openAgentListenModal(agentExt, row, btn) {
                 </thead>
     
                 <tbody>
-                  <tr><td>(248) 436-3443 (300)</td><td>0</td><td>3</td><td>5</td><td>10</td><td>8</td><td>7</td><td>2</td></tr>
-                  <tr><td>(248) 436-3449 (700)</td><td>0</td><td>3</td><td>3</td><td>22</td><td>13</td><td>18</td><td>6</td></tr>
-                  <tr><td>(313) 995-9080 (301)</td><td>0</td><td>6</td><td>12</td><td>11</td><td>5</td><td>6</td><td>12</td></tr>
+                  <tr><td>(947) 282-2640 (300)</td><td>0</td><td>3</td><td>5</td><td>10</td><td>8</td><td>7</td><td>2</td></tr>
+                  <tr><td>(947) 282-2641 (301)</td><td>0</td><td>3</td><td>3</td><td>22</td><td>13</td><td>18</td><td>6</td></tr>
+                  <tr><td>(947) 282-2642 (302)</td><td>0</td><td>6</td><td>12</td><td>11</td><td>5</td><td>6</td><td>12</td></tr>
                 </tbody>
               </table>
             </div>
@@ -7193,13 +7193,13 @@ function openAgentListenModal(agentExt, row, btn) {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>Mike Johnson</td><td>2</td><td>10</td><td>12</td><td>9</td><td>10</td><td>12</td><td>5</td><td>60</td></tr>
-                  <tr><td>Cathy Thomas</td><td>1</td><td>7</td><td>8</td><td>7</td><td>7</td><td>8</td><td>4</td><td>42</td></tr>
-                  <tr><td>Jake Lee</td><td>2</td><td>9</td><td>10</td><td>10</td><td>9</td><td>10</td><td>6</td><td>56</td></tr>
-                  <tr><td>Bob Andersen</td><td>0</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td><td>1</td><td>13</td></tr>
-                  <tr><td>Brittany Lawrence</td><td>1</td><td>4</td><td>4</td><td>5</td><td>5</td><td>6</td><td>3</td><td>28</td></tr>
-                  <tr><td>Alex Roberts</td><td>2</td><td>10</td><td>12</td><td>10</td><td>9</td><td>12</td><td>7</td><td>62</td></tr>
-                  <tr><td>Mark Sanchez</td><td>1</td><td>5</td><td>5</td><td>4</td><td>4</td><td>6</td><td>4</td><td>29</td></tr>
+                  <tr><td>Abbey Palmer</td><td>2</td><td>10</td><td>12</td><td>9</td><td>10</td><td>12</td><td>5</td><td>60</td></tr>
+                  <tr><td>Emma Johnson</td><td>1</td><td>7</td><td>8</td><td>7</td><td>7</td><td>8</td><td>4</td><td>42</td></tr>
+                  <tr><td>Liam Turner</td><td>2</td><td>9</td><td>10</td><td>10</td><td>9</td><td>10</td><td>6</td><td>56</td></tr>
+                  <tr><td>Mike Jones</td><td>0</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td><td>1</td><td>13</td></tr>
+                  <tr><td>Chad Sanders</td><td>1</td><td>4</td><td>4</td><td>5</td><td>5</td><td>6</td><td>3</td><td>28</td></tr>
+                  <tr><td>Isabella Martinez</td><td>2</td><td>10</td><td>12</td><td>10</td><td>9</td><td>12</td><td>7</td><td>62</td></tr>
+                  <tr><td>Bob Smith</td><td>1</td><td>5</td><td>5</td><td>4</td><td>4</td><td>6</td><td>4</td><td>29</td></tr>
                 </tbody>
               </table>
             </div>
@@ -7294,13 +7294,13 @@ function openAgentListenModal(agentExt, row, btn) {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>Mike Johnson</td><td>3</td><td>11</td><td>9</td><td>10</td><td>10</td><td>11</td><td>6</td><td>60</td></tr>
-                  <tr><td>Cathy Thomas</td><td>2</td><td>8</td><td>7</td><td>6</td><td>6</td><td>9</td><td>3</td><td>41</td></tr>
-                  <tr><td>Jake Lee</td><td>1</td><td>9</td><td>8</td><td>8</td><td>8</td><td>10</td><td>5</td><td>49</td></tr>
-                  <tr><td>Bob Andersen</td><td>1</td><td>3</td><td>3</td><td>3</td><td>4</td><td>3</td><td>2</td><td>19</td></tr>
-                  <tr><td>Brittany Lawrence</td><td>0</td><td>5</td><td>5</td><td>6</td><td>6</td><td>7</td><td>2</td><td>31</td></tr>
-                  <tr><td>Alex Roberts</td><td>3</td><td>11</td><td>13</td><td>11</td><td>10</td><td>11</td><td>7</td><td>66</td></tr>
-                  <tr><td>Mark Sanchez</td><td>1</td><td>4</td><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td><td>24</td></tr>
+                  <tr><td>Abbey Palmer</td><td>3</td><td>11</td><td>9</td><td>10</td><td>10</td><td>11</td><td>6</td><td>60</td></tr>
+                  <tr><td>Emma Johnson</td><td>2</td><td>8</td><td>7</td><td>6</td><td>6</td><td>9</td><td>3</td><td>41</td></tr>
+                  <tr><td>Liam Turner</td><td>1</td><td>9</td><td>8</td><td>8</td><td>8</td><td>10</td><td>5</td><td>49</td></tr>
+                  <tr><td>Mike Jones</td><td>1</td><td>3</td><td>3</td><td>3</td><td>4</td><td>3</td><td>2</td><td>19</td></tr>
+                  <tr><td>Chad Sanders</td><td>0</td><td>5</td><td>5</td><td>6</td><td>6</td><td>7</td><td>2</td><td>31</td></tr>
+                  <tr><td>Isabella Martinez</td><td>3</td><td>11</td><td>13</td><td>11</td><td>10</td><td>11</td><td>7</td><td>66</td></tr>
+                  <tr><td>Bob Smith</td><td>1</td><td>4</td><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td><td>24</td></tr>
                 </tbody>
               </table>
             </div>
@@ -7316,13 +7316,13 @@ function openAgentListenModal(agentExt, row, btn) {
            function renderEmployeeChart(containerId) {
          const data = google.visualization.arrayToDataTable([
               ['Employee', 'Calls'],
-              ['Mike Johnson', 60],
-              ['Cathy Thomas', 42],
-              ['Jake Lee', 49],
-              ['Bob Andersen', 19],
-              ['Brittany Lawrence', 31],
-              ['Alex Roberts', 66],
-              ['Mark Sanchez', 24],
+              ['Abbey Palmer', 60],
+              ['Emma Johnson', 42],
+              ['Liam Turner', 49],
+              ['Mike Jones', 19],
+              ['Chad Sanders', 31],
+              ['Isabella Martinez', 66],
+              ['Bob Smith', 24],
             ]);
 
          const options = {
