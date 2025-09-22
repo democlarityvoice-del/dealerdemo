@@ -911,7 +911,7 @@ function buildCallHistorySrcdoc() {
     display:inline-flex; align-items:center; justify-content:center;
     padding:0; cursor:pointer;
   }
-  .icon-btn img{ width:16px; height:16px; opacity:.35; transition:opacity .12s; }
+  .icon-btn img{ width:14px; height:14px; opacity:.35; transition:opacity .12s; }
   .icon-btn:hover img, tr:hover .icon-btn img{ opacity:1; }
   .icon-btn:hover, tr:hover .icon-btn{ background:#e9e9e9; border-color:#000000; }
 
