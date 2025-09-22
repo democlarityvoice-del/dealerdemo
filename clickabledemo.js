@@ -2907,7 +2907,7 @@ tr:hover .cvq-icon{ opacity:.85; }
 /* ✅ NEW: Dark border on hover */
 .cvq-icon:hover,
 tr:hover .cvq-icon {
-  border-color: #000;
+  border-color: #000; 
 }
 
 /* --- CVQ MODAL: CALL CENTER default hidden; open with .is-open --- */
