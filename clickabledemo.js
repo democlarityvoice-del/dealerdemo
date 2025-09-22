@@ -913,7 +913,7 @@ function buildCallHistorySrcdoc() {
   }
   .icon-btn img{ width:16px; height:16px; opacity:.35; transition:opacity .12s; }
   .icon-btn:hover img, tr:hover .icon-btn img{ opacity:1; }
-  .icon-btn:hover, tr:hover .icon-btn{ background:#e9e9e9; border-color:#bdbdbd; }
+  .icon-btn:hover, tr:hover .icon-btn{ background:#e9e9e9; border-color:#000000; }
 
   /* Listen = plain (no circle) */
   .icon-btn--plain{ background:transparent; border:0; width:24px; height:24px; }
