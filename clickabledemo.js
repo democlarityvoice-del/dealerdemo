@@ -7590,30 +7590,33 @@ function openAgentListenModal(agentExt, row, btn) {
        
 
         const survey = [
-          "Please take a moment to complete our survey: www.mrservicetoday.com/survey",
-          "We value your feedback! www.mrservicetoday.com/survey",
-          "Help us improve by filling out a quick survey: www.mrservicetoday.com/survey",
-          "Your opinion matters! www.mrservicetoday.com/survey"
+          "Please take a moment to complete our survey: www.sterlingsalesauto.com/survey",
+          "We value your feedback! www.sterlingsalesauto.com/survey",
+          "Help us improve by filling out a quick survey: www.sterlingsalesauto.com/survey",
+          "Your opinion matters! www.sterlingsalesauto.com/survey"
         ];
     
         const confirmations = [
-          "Reminder: Your Mr. Service appointment is tomorrow at 9:00am.",
-          "Confirming your appointment for Friday at 1:30pm.",
-          "Your Mr. Service appointment is scheduled for Monday at 10:00am.",
-          "Appointment reminder: Wednesday at 3:00pm.",
-          "Mr. Service will see you tomorrow morning at 8:30am.",
-          "We're scheduled to visit you Friday at 2:15pm."
+          "Auto service reminder: Your Sterling Sales auto service is tomorrow at 9:00am.",
+          "Confirming your Sterling Sales auto service for Friday at 1:30pm.",
+          "Your Sterling Sales auto service is scheduled for Monday at 10:00am.",
+          "Auto service reminder: Wednesday at 3:00pm.",
+          "Sterling Sales will see you tomorrow morning at 8:30am for auto service.",
+          "We're scheduled for your Sterling Sales auto service Friday at 2:15pm."
         ];
     
         const customerReplies = [
-          "Yes, I will tell your tech when they arrive.",
-          "Thanks, I’ll be home all day.",
-          "Okay, see you then."
+          "I’ll drop off the car tonight and leave the keys in the night box.",
+          "Please add an oil change and tire rotation to the auto service.",
+          "That time works—can you also check the brake noise?",
+          "I approved the estimate online.",
+          "Do you have a loaner available for tomorrow?",
+          "Thanks—I'll be waiting in the lounge while the auto service is done."
         ];
     
-        const internalMsgs = [
-          { name: "Cathy", text: "Hey Cathy, can you look at Robert's account?" },
-          { name: "Jake", text: "I see a note on that account for you. Take a look." }
+       const internalMsgs = [
+          { name: "Cathy", text: "Cathy, can you look at the parts on that account?" },
+          { name: "Jake",  text: "Jake, I see a note regarding backorder on that account." }
         ];
     
         const phoneAreaCodes = ['313','248','586','214','469','972'];
