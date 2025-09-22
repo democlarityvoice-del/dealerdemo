@@ -5052,6 +5052,12 @@ const rowsForQueue = getRowsForQueue(queueNameOnly, queueNumber);
       tr:hover .cvqs-icon-btn img {
         opacity: 1;
       }
+
+     /* NEW: black ring on hover */
+    .cvqs-icon-btn:hover,
+    tr:hover .cvqs-icon-btn {
+      border-color: #000;
+    }
        
       .cv-audio-row td {
         background: #f3f6f8;
@@ -5865,6 +5871,13 @@ function buildAgentDetailsSrcdoc(agentExt, stat, rowsHTML) {
     vertical-align: middle;
   }
   .cvqs-icon-btn:hover img, tr:hover .cvqs-icon-btn img{ opacity:1; }
+
+  
+      /* NEW: black ring on hover */
+    .cvqs-icon-btn:hover,
+    tr:hover .cvqs-icon-btn {
+      border-color: #000;
+    }
 
   /* some themes set table imgs to block; force inline */
   .cv-agent-table img{ display:inline-block; vertical-align:middle; }
