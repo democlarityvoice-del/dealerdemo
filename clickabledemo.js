@@ -3474,8 +3474,8 @@ if (!window.__cvAgentsPanelInit) {
     for (var i=0;i<AGENTS.length;i++){
       var a = AGENTS[i];
       var row = doc.createElement('div');
-      var offline = a.lunch ? true : !a.online;
-      row.className = 'cv-row' + (offline ? ' is-offline' : '');
+      var status = a.lunch ? 'offline' : (a.status || (a.online ? 'online' : 'offline'));
+        row.className = 'cv-row is-' + status;
 
       var top = doc.createElement('div');
       top.className = 'cv-top';
