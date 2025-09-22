@@ -96,6 +96,11 @@ tr:hover .listen-btn img {
   opacity: 1;
 }
 
+/* Add black border on hover (either row or button) */
+.listen-btn:hover,
+tr:hover .listen-btn {
+  border-color: #000;
+}
 
 /* --- STATS BLOCK --- */
   .stats-section {
