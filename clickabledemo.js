@@ -6592,6 +6592,1220 @@ function openAgentListenModal(agentExt, row, btn) {
 
 // === AGENT MODAL COMPLETION - END ===
 
+// === BEGIN ANALYTICS ===
+// Side bar destroy and replace
+(function watchSidebarAndInjectButton() {
+  const log = (...args) => console.log('[CV Demo]', ...args);
+
+  const injectButton = (sidebar) => {
+    if (!sidebar || sidebar.querySelector('.cv-custom-button')) return;
+
+    sidebar.innerHTML = ''; // Clear all buttons
+
+    const btn = document.createElement('div');
+    btn.textContent = 'Default Dashboard';
+    btn.classList.add('cv-custom-button');
+
+    Object.assign(btn.style, {
+      backgroundColor: '#f79621',
+      color: '#fff',
+      padding: '8px 10px',
+      margin: '5px',
+      borderRadius: '4px',
+      textAlign: 'center',
+      fontWeight: 'bold',
+      fontFamily: 'Helvetica, Arial, sans-serif',
+      boxShadow: 'inset 0 0 0 1px #e67d0c',
+      cursor: 'default',
+      userSelect: 'none'
+    });
+
+    sidebar.appendChild(btn);
+    log('✅ Replaced sidebar with Default Dashboard button.');
+  };
+
+  const sidebarWrapper = document.querySelector('.home-sidebar.span');
+  if (!sidebarWrapper) return log('❌ Sidebar wrapper not found.');
+
+  const observer = new MutationObserver(() => {
+    const dashboardList = sidebarWrapper.querySelector('#home-dashboards-body');
+    if (dashboardList) {
+      injectButton(dashboardList);
+    }
+  });
+
+  observer.observe(sidebarWrapper, {
+    childList: true,
+    subtree: true
+  });
+
+  log('👀 Watching .home-sidebar.span for dashboard load...');
+})();
+
+// === ADD FOUR FAKE WIDGETS LOGIC ===
+
+// === CV DEMO DASHBOARD MODES ===
+ (function injectDemoAnalyticsV3() {
+  if (
+    window.__cvDemoAnalyticsInit ||
+    !/\/portal\/clarity\/analytics(?:[\/?#]|$)/.test(location.pathname)
+  ) {
+    return;
+  }
+
+  window.__cvDemoAnalyticsInit = true;
+
+  const log = (...args) => console.log('[CV DEMO]', ...args);
+  const ICON_EDIT = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/pen-to-square-regular-full.svg';
+  const ICON_ZOOM = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/magnifying-glass-solid-full.svg';
+
+  const FINAL_WIDGETS = [
+    'Inbound by Employee This Week',
+    'Outbound Calls This Week'
+  ];
+
+  function injectSidebarButtons() {
+    const sidebar = document.querySelector('#home-dashboards-body');
+    if (!sidebar || sidebar.querySelector('.cv-mode-toggle')) return;
+
+    const createBtn = (label, onClick) => {
+      const btn = document.createElement('div');
+      btn.textContent = label;
+      btn.className = 'cv-mode-toggle';
+      Object.assign(btn.style, {
+          backgroundColor: '#f79621',
+          color: '#fff', // ✅ Restore white text
+          padding: '8px 12px',
+          margin: '5px',
+          borderRadius: '4px',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontFamily: 'Helvetica, Arial, sans-serif',
+          fontSize: '13px',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+          cursor: 'pointer',
+          userSelect: 'none'
+        });
+
+      btn.onclick = onClick;
+      return btn;
+    };
+
+    const liveBtn = createBtn('Live Mode', () => {
+      removeFakeWidgets();
+      forceReloadOriginalDashboard();
+    });
+
+    const demoBtn = createBtn('Return to Demo Mode', () => {
+      injectDemoWidgets();
+    });
+
+    sidebar.appendChild(liveBtn);
+    sidebar.appendChild(demoBtn);
+    log('✅ Injected Live/Demo mode buttons into sidebar.');
+  }
+
+  function removeFakeWidgets() {
+    document.querySelectorAll('.cv-demo-chart-injected').forEach(el => el.remove());
+    log('🧼 Removed all fake demo widgets.');
+  }
+
+  function forceReloadOriginalDashboard() {
+    location.reload(); // safest reset (if you want to soft-rebuild, you can use MutationObserver fallback)
+  }
+
+  function injectDemoWidgets() {
+    const container = document.getElementById('sortable');
+    if (!container || document.querySelector('.cv-demo-chart-injected')) return;
+
+    container.querySelectorAll('.dashboard-widget').forEach(w => w.remove());
+    
+  const createWidget = (title, chartId) => {
+      let widgetType = 'unknown';
+      if (title.includes('Summary')) widgetType = 'summary';
+      else if (title.includes('Marketing')) widgetType = 'inbound';
+      else if (title.includes('Outbound')) widgetType = 'outbound';
+      else if (title.includes('Employee')) widgetType = 'employee';
+    
+      const li = document.createElement('li');
+      li.className = 'dashboard-widget cv-demo-chart-injected';
+      li.setAttribute('data-widget', widgetType);     
+
+
+      li.innerHTML = `
+        <div class="widget-container" style="
+          width:100%; height:100%;
+          border:1px solid #ccc;
+          border-radius:6px;
+          background:#fff;
+          box-shadow: 0 0 3px rgba(0,0,0,0.1);
+          display:flex;
+          flex-direction:column;
+        ">
+          <div class="widget-header" style="
+            background:#f7931e;
+            color:black;
+            font-weight:bold;
+            font-family:Helvetica, Arial, sans-serif;
+            padding:6px 10px;
+            border-radius:6px 6px 0 0;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            font-size:13px;
+          ">
+            <span>${title}</span>
+            <span style="display:flex; gap:6px;">
+              <span style="display:flex; gap:6px;">
+                  <img
+                      src="${ICON_ZOOM}"
+                      alt="Zoom"
+                      class="cvas-action-icon"
+                      data-action="magnify"
+                      style="height:14px; cursor:pointer;"
+                    />
+                  <img
+                    src="${ICON_EDIT}"
+                    alt="Edit"
+                    title='To demo Edit Widget, please click "Live Mode". To return to View Chart Details, please click "Return to Demo Mode".'
+                    style="height:14px; cursor:pointer;"
+                    onclick="alert('Switch to Live Mode to edit this widget.');"
+                  />           
+                </span>
+              </div>
+              <div class="widget-body" style="
+                flex:1;
+                padding:4px;
+                display:flex;
+                flex-direction:column;
+                justify-content:space-between;
+              ">
+                <div id="${chartId}" style="width:100%; height:85%;"></div>
+                <div style="font-size:11px; color:#333; text-align:right; padding-right:5px;">
+                  1/17 <span style="color:#00f;">▸</span>
+                </div>
+              </div>
+            </div>
+          `;
+          return li;
+        };
+
+
+    container.appendChild(createWidget('Summary by Hour for Today', 'chart-summary'));
+    container.appendChild(createWidget('Inbound Calls This Week by Marketing Number', 'chart-inbound'));
+    container.appendChild(createWidget('Calls by Employee This Week', 'chart-employee'));
+    container.appendChild(createWidget('Outbound Calls This Week', 'chart-outbound'));
+
+    loadAndDrawCharts();
+    log('✅ Demo widgets injected.');
+  }
+
+    
+    // GOOGLE CHART HELPER for Call Queue by Hour
+    const googleScript = document.createElement('script');
+    googleScript.src = 'https://www.gstatic.com/charts/loader.js';
+    googleScript.onload = () => {
+      google.charts.load('current', { packages: ['corechart'] });
+      google.charts.setOnLoadCallback(() => renderSummaryChart('cv-summary-chart'));
+    };
+    document.head.appendChild(googleScript);
+    
+    // Replace the old renderSummaryChart with this version
+    function renderSummaryChart(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '<div id="summary-chart-google" style="width:100%; height:400px;"></div>';
+    
+      const data = google.visualization.arrayToDataTable([
+          ['Hour', 'New Sales (301)', 'Existing Cust (302)', 'Billing (303)', 'Main Routing (300)'],
+          ['8am', 3, 0, 0, 0],
+          ['9am', 2, 3, 0, 0],       // Existing Cust visible here
+          ['10am', 3, 2, 1, 0],      // Shared slot (leave 0 for Main Routing)
+          ['11am', 4, 0, 1, 2],      // Add Main Routing here
+          ['12pm', 1, 0, 0, 3],      // And again here
+          ['1pm', 5, 0, 1, 0],
+          ['2pm', 3, 0, 0, 0]
+        ]);
+
+    
+      const options = {
+        title: '',
+        curveType: 'function',
+        legend: { position: 'right' },
+        colors: ['#f00', '#0a0', '#00f', '#f90'],
+        chartArea: { width: '75%', height: '70%' },
+        hAxis: { title: 'Hour' },
+        vAxis: { title: 'Calls', viewWindow: { min: 0 } },
+        lineWidth: 3,
+        pointSize: 5,
+      };
+    
+      const chart = new google.visualization.LineChart(document.getElementById('summary-chart-google'));
+      chart.draw(data, options);
+    }
+
+    
+  function loadAndDrawCharts() {
+    if (!window.google || !google.charts) {
+      const script = document.createElement('script');
+      script.src = 'https://www.gstatic.com/charts/loader.js';
+      script.onload = () => {
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawCharts);
+      };
+      document.head.appendChild(script);
+    } else {
+      google.charts.load('current', { packages: ['corechart'] });
+      google.charts.setOnLoadCallback(drawCharts);
+    }
+  }
+
+    // LINE CHART
+      function drawCharts() {
+     
+      const lineData = google.visualization.arrayToDataTable([
+        ['Hour', 'All'],
+        ['0:00', 0], ['4:00', 2], ['8:00', 5], ['12:00', 9], ['16:00', 6], ['20:00', 3]
+      ]);
+      new google.visualization.LineChart(document.getElementById('chart-summary'))
+        .draw(lineData, {
+          chartArea: { width: '80%', height: '70%' },
+          legend: { position: 'bottom' },
+          hAxis: { title: 'Hours of Day' },
+          vAxis: { title: 'Number of Calls', minValue: 0 },
+          colors: ['#3366cc'],
+          lineWidth: 3,
+          pointSize: 5,
+          tooltip: { textStyle: { fontSize: 12 } }
+        });
+    
+      // GREEN COLUMN CHART (Inbound)
+      const inboundData = google.visualization.arrayToDataTable([
+        ['Day', 'Calls'],
+        ['Sun', 12], ['Mon', 20], ['Tue', 32], ['Wed', 24], ['Thu', 28], ['Fri', 18]
+      ]);
+      new google.visualization.ColumnChart(document.getElementById('chart-inbound'))
+        .draw(inboundData, {
+          chartArea: { width: '80%', height: '70%' },
+          legend: { position: 'bottom' },
+          hAxis: { title: 'Day of Week' },
+          vAxis: { title: 'Number of Calls', minValue: 0, gridlines: { count: 4 } },
+          bar: { groupWidth: '65%' },
+          colors: ['#3cb371'] // MediumSeaGreen
+        });
+    
+      
+        // PIE CHART (Employee - real totals)
+      const pieData = google.visualization.arrayToDataTable([
+        ['Employee', 'Calls'],
+        ['Mike Johnson', 60],
+        ['Cathy Thomas', 42],
+        ['Jake Lee', 56],
+        ['Bob Andersen', 13],
+        ['Brittany Lawrence', 28],
+        ['Alex Roberts', 62],
+        ['Mark Sanchez', 29]
+      ]);
+    
+      new google.visualization.PieChart(document.getElementById('chart-employee'))
+        .draw(pieData, {
+          chartArea: { width: '95%', height: '85%' },
+          legend: { position: 'bottom' },
+          pieHole: 0.4,
+          is3D: true,
+          colors: [
+              '#3366cc', // Mike - blue
+              '#dc3912', // Cathy - red
+              '#109618', // Jake - green
+              '#ff9900', // Bob - orange
+              '#990099', // Brittany - purple
+              '#0099c6', // Alex - cyan
+              '#dd4477'  // Mark - pink
+          ]
+        });
+
+
+        // OUTBOUND CHART (Fixed version using Google Charts only)
+      const outboundData = google.visualization.arrayToDataTable([
+        ['Day','Mike Johnson','Cathy Thomas','Jake Lee','Bob Andersen','Brittany Lawrence','Alex Roberts','Mark Sanchez'],
+        ['Sun', 2, 1, 2, 0, 1, 2, 1],
+        ['Mon',10, 7, 9, 2, 4,10, 5],
+        ['Tue',12, 8,10, 2, 4,12, 5],
+        ['Wed', 9, 7,10, 2, 5,10, 4],
+        ['Thu',10, 7, 9, 3, 5, 9, 4],
+        ['Fri',12, 8,10, 3, 6,12, 6],
+        ['Sat', 5, 4, 6, 1, 3, 7, 4],
+      ]);
+
+      new google.visualization.ComboChart(document.getElementById('chart-outbound'))
+        .draw(outboundData, {
+          chartArea: { width: '80%', height: '70%' },
+          legend: { position: 'right' },
+          isStacked: false,
+          seriesType: 'bars',
+          bar: { groupWidth: '6%' }, // Skinny bars
+          hAxis: { title: 'Day of Week' },
+          vAxis: { title: 'Number of Calls', viewWindow: { min: 0 } },
+          colors: [
+              '#007bff', // Blue
+              '#dc3545', // Red
+              '#ffc107', // Yellow
+              '#28a745', // Green
+              '#6610f2', // Purple
+              '#fd7e14', // Orange
+              '#20c997'  // Teal
+            ]
+    
+        });
+    
+    }
+
+
+    
+        // CALL QUEUE SUMMARY MODAL
+    function cvSummaryModal() {
+      const existing = document.querySelector('#cv-summary-modal');
+      if (existing) existing.remove();
+    
+      const summaryChart = `<div id="cv-summary-chart" style="flex: 2; min-width: 700px;"></div>`;
+    
+      const queueTable = `
+        <div id="cv-summary-table-container" style="flex: 1; max-height: 360px; overflow: auto;">
+          <table style="border-collapse: collapse; font-size: 13px; min-width: 500px;">
+            <thead>
+              <tr style="background: #eee;">
+                <th style="padding: 4px 8px; text-align: left;">Marketing Number</th>
+                <th style="transform: translateX(-4px);">8:00</th>
+                <th style="transform: translateX(-4px);">9:00</th>
+                <th style="transform: translateX(-4px);">10:00</th>
+                <th style="transform: translateX(-4px);">11:00</th>
+                <th style="transform: translateX(-4px);">12:00</th>
+                <th style="transform: translateX(-4px);">1:00</th>
+                <th style="transform: translateX(-4px);">2:00</th>
+              </tr>
+            </thead>
+    
+            <tbody>
+              <tr>
+                <td style="padding: 4px 8px;">Main Routing (300)</td><td>0</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 8px;">New Sales (301)</td><td>3</td><td>2</td><td>3</td><td>4</td><td>1</td><td>5</td><td>3</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 8px;">Existing Customer (302)</td><td>0</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 8px;">Billing (303)</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>`;
+        
+          const modal = document.createElement('div');
+          modal.id = 'cv-summary-modal';
+          modal.style = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1300px;
+            height: 540px;
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            z-index: 9999;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            font-family: Helvetica, Arial, sans-serif;
+          `;
+        
+          modal.innerHTML = `
+            <div style="background: #f7931e; color: black; font-weight: bold; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+              <span>Summary by Hour</span>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/file-excel-solid-full.svg" title="Export to Excel" style="height: 18px; cursor: pointer;">
+                <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/print-solid-full.svg" title="Print" style="height: 18px; cursor: pointer;">
+                <span style="cursor: pointer; font-size: 20px;" onclick="document.querySelector('#cv-summary-modal')?.remove()">&times;</span>
+              </div>
+            </div>
+            <div style="flex: 1; padding: 15px 20px; overflow: auto;">
+              <div style="display: flex; gap: 30px; align-items: flex-start;">
+                ${summaryChart}
+                ${queueTable}
+              </div>
+            </div>
+          `;
+        
+          document.body.appendChild(modal);
+          renderSummaryChart('cv-summary-chart');
+        }
+
+
+
+    
+ // INBOUND MODAL       
+    function cvInboundModal() {
+      const existing = document.querySelector('#cv-inbound-modal');
+      if (existing) existing.remove();
+    
+      const chartId = 'cv-inbound-chart';
+      const tableId = 'cv-inbound-table-container';
+    
+      const modal = document.createElement('div');
+      modal.id = 'cv-inbound-modal';
+      modal.style = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1300px;
+        height: 540px;
+        background: white;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        z-index: 9999;
+        border: 1px solid #ccc;
+        display: flex;
+        flex-direction: column;
+        font-family: Helvetica, Arial, sans-serif;
+      `;
+    
+      modal.innerHTML = `
+        <div style="background: #f7931e; color: black; font-weight: bold; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+          <span>Inbound This Week</span>
+          <div style="display: flex; gap: 20px;">
+            <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/file-excel-solid-full.svg" title="Export to Excel" style="height: 18px; cursor: pointer;">
+            <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/print-solid-full.svg" title="Print" style="height: 18px; cursor: pointer;">
+            <span style="cursor: pointer; font-size: 20px;" onclick="document.querySelector('#cv-inbound-modal')?.remove()">&times;</span>
+          </div>
+        </div>
+        <div style="flex: 1; padding: 15px 20px; overflow: auto;">
+          <div style="display: flex; gap: 30px; min-width: 1000px;">
+            <div id="${chartId}" style="flex: 2; height: 300px;"></div>
+            <div id="${tableId}" style="flex: 1; overflow: auto; max-height: 360px;">
+              <table style="border-collapse: collapse; font-size: 13px; min-width: 500px;">            
+                <thead>
+                  <tr style="background: #eee;">
+                    <th style="padding: 4px 8px; text-align: left;">Marketing Number</th>
+                    <th style="transform: translateX(-4px);">Sun</th>
+                    <th style="transform: translateX(-4px);">Mon</th>
+                    <th style="transform: translateX(-4px);">Tue</th>
+                    <th style="transform: translateX(-4px);">Wed</th>
+                    <th style="transform: translateX(-4px);">Thu</th>
+                    <th style="transform: translateX(-4px);">Fri</th>
+                    <th style="transform: translateX(-4px);">Sat</th>
+                  </tr>
+                </thead>
+    
+                <tbody>
+                  <tr><td>(248) 436-3443 (300)</td><td>0</td><td>3</td><td>5</td><td>10</td><td>8</td><td>7</td><td>2</td></tr>
+                  <tr><td>(248) 436-3449 (700)</td><td>0</td><td>3</td><td>3</td><td>22</td><td>13</td><td>18</td><td>6</td></tr>
+                  <tr><td>(313) 995-9080 (301)</td><td>0</td><td>6</td><td>12</td><td>11</td><td>5</td><td>6</td><td>12</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    
+      document.body.appendChild(modal);
+      renderInboundChart(chartId);
+    }
+    
+    function renderInboundChart(containerId) {
+      const data = google.visualization.arrayToDataTable([
+        ['Day', 'Calls'],
+        ['Sun', 0],
+        ['Mon', 12],
+        ['Tue', 20],
+        ['Wed', 43],
+        ['Thu', 26],
+        ['Fri', 31],
+        ['Sat', 20],
+      ]);
+    
+      const options = {
+        title: 'Inbound This Week',
+        legend: { position: 'none' },
+        colors: ['#3cb371'],
+        chartArea: { width: '75%', height: '65%' },
+        height: 600,
+        hAxis: { title: 'Day of Week', titleTextStyle: { italic: true } },
+        vAxis: { title: 'Number of Calls' },
+      };
+    
+      const chart = new google.visualization.ColumnChart(document.getElementById(containerId));
+      chart.draw(data, options);
+    }
+    
+        
+       // OUTBOUND MODAL
+    function cvOutboundModal() {
+      const existing = document.querySelector('#cv-outbound-modal');
+      if (existing) existing.remove();
+    
+      const chartId = 'cv-outbound-chart';
+      const tableId = 'cv-outbound-table-container';
+    
+      const modal = document.createElement('div');
+      modal.id = 'cv-outbound-modal';
+      modal.style = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1300px;
+        height: 540px;
+        background: white;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        z-index: 9999;
+        border: 1px solid #ccc;
+        display: flex;
+        flex-direction: column;
+        font-family: Helvetica, Arial, sans-serif;
+      `;
+    
+      modal.innerHTML = `
+        <div style="background: #f7931e; color: black; font-weight: bold; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+          <span>Agent Call Breakdown by Day</span>
+          <div style="display: flex; gap: 20px;">
+            <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/file-excel-solid-full.svg" title="Export to Excel" style="height: 18px; cursor: pointer;">
+            <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/print-solid-full.svg" title="Print" style="height: 18px; cursor: pointer;">
+            <span style="cursor: pointer; font-size: 20px;" onclick="document.querySelector('#cv-outbound-modal')?.remove()">&times;</span>
+          </div>
+        </div>
+        <div style="flex: 1; padding: 15px 20px; overflow: auto;">
+          <div style="display: flex; gap: 30px; min-width: 1000px;">
+            <div id="${chartId}" style="flex: 2; height: 300px;"></div>
+            <div id="${tableId}" style="flex: 1; overflow: auto; max-height: 360px;">
+              <table style="border-collapse: collapse; font-size: 13px; min-width: 500px;">            
+                <thead>
+                  <tr style="background: #eee;">
+                    <th style="padding: 4px 8px; text-align: left;">Agent</th>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Mike Johnson</td><td>2</td><td>10</td><td>12</td><td>9</td><td>10</td><td>12</td><td>5</td><td>60</td></tr>
+                  <tr><td>Cathy Thomas</td><td>1</td><td>7</td><td>8</td><td>7</td><td>7</td><td>8</td><td>4</td><td>42</td></tr>
+                  <tr><td>Jake Lee</td><td>2</td><td>9</td><td>10</td><td>10</td><td>9</td><td>10</td><td>6</td><td>56</td></tr>
+                  <tr><td>Bob Andersen</td><td>0</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td><td>1</td><td>13</td></tr>
+                  <tr><td>Brittany Lawrence</td><td>1</td><td>4</td><td>4</td><td>5</td><td>5</td><td>6</td><td>3</td><td>28</td></tr>
+                  <tr><td>Alex Roberts</td><td>2</td><td>10</td><td>12</td><td>10</td><td>9</td><td>12</td><td>7</td><td>62</td></tr>
+                  <tr><td>Mark Sanchez</td><td>1</td><td>5</td><td>5</td><td>4</td><td>4</td><td>6</td><td>4</td><td>29</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    
+      document.body.appendChild(modal);
+      renderOutboundChart(chartId);
+    }
+
+    function renderOutboundChart(containerId) {
+      const data = google.visualization.arrayToDataTable([
+        ['Day','Mike Johnson','Cathy Thomas','Jake Lee','Bob Andersen','Brittany Lawrence','Alex Roberts','Mark Sanchez'],
+        ['Sun', 2, 1, 2, 0, 1, 2, 1],
+        ['Mon',10, 7, 9, 2, 4,10, 5],
+        ['Tue',12, 8,10, 2, 4,12, 5],
+        ['Wed', 9, 7,10, 2, 5,10, 4],
+        ['Thu',10, 7, 9, 3, 5, 9, 4],
+        ['Fri',12, 8,10, 3, 6,12, 6],
+        ['Sat', 5, 4, 6, 1, 3, 7, 4],
+      ]);
+    
+      const options = {
+        title: 'Outbound Agent Breakdown',
+        legend: { position: 'right' },
+        seriesType: 'bars',
+        bar: { groupWidth: '6%' },
+        chartArea: { width: '75%', height: '65%' },
+        height: 600,
+        hAxis: { title: 'Day of Week' },
+        vAxis: { title: 'Number of Calls' },
+        colors: ['#4c78a8','#f58518','#54a24b','#b279a2','#e57027','#9c755f','#edc948']
+      };
+    
+      const chart = new google.visualization.ComboChart(document.getElementById(containerId));
+      chart.draw(data, options);
+    }
+
+        
+     // EMPLOYEE MODAL  
+     function cvEmployeeModal(containerId) {
+      const existing = document.querySelector('#cv-employee-modal');
+      if (existing) existing.remove();
+    
+      const chartId = 'cv-employee-chart';
+      const tableId = 'cv-employee-table-container';
+    
+      const modal = document.createElement('div');
+      modal.id = 'cv-employee-modal';
+      modal.style = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1300px;
+        height: 540px;
+        background: white;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        z-index: 9999;
+        border: 1px solid #ccc;
+        display: flex;
+        flex-direction: column;
+        font-family: Helvetica, Arial, sans-serif;
+      `;
+    
+      modal.innerHTML = `
+        <div style="background: #f7931e; color: black; font-weight: bold; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+          <span>Calls by Employee This Week</span>
+          <div style="display: flex; gap: 20px;">
+            <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/file-excel-solid-full.svg" title="Export to Excel" style="height: 18px; cursor: pointer;">
+            <img src="https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/print-solid-full.svg" title="Print" style="height: 18px; cursor: pointer;">
+            <span style="cursor: pointer; font-size: 20px;" onclick="document.querySelector('#cv-employee-modal')?.remove()">&times;</span>
+          </div>
+        </div>
+        <div style="flex: 1; padding: 15px 20px; overflow: auto;">
+          <div style="display: flex; gap: 30px; min-width: 1000px;">
+            <div id="${chartId}" style="flex: 2; height: 300px;"></div>
+            <div id="${tableId}" style="flex: 1; overflow: auto; max-height: 360px;">
+              <table style="border-collapse: collapse; font-size: 13px; min-width: 500px;">            
+                <thead>
+                  <tr style="background: #eee;">
+                    <th style="padding: 4px 8px; text-align: left;">Employee</th>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Mike Johnson</td><td>3</td><td>11</td><td>9</td><td>10</td><td>10</td><td>11</td><td>6</td><td>60</td></tr>
+                  <tr><td>Cathy Thomas</td><td>2</td><td>8</td><td>7</td><td>6</td><td>6</td><td>9</td><td>3</td><td>41</td></tr>
+                  <tr><td>Jake Lee</td><td>1</td><td>9</td><td>8</td><td>8</td><td>8</td><td>10</td><td>5</td><td>49</td></tr>
+                  <tr><td>Bob Andersen</td><td>1</td><td>3</td><td>3</td><td>3</td><td>4</td><td>3</td><td>2</td><td>19</td></tr>
+                  <tr><td>Brittany Lawrence</td><td>0</td><td>5</td><td>5</td><td>6</td><td>6</td><td>7</td><td>2</td><td>31</td></tr>
+                  <tr><td>Alex Roberts</td><td>3</td><td>11</td><td>13</td><td>11</td><td>10</td><td>11</td><td>7</td><td>66</td></tr>
+                  <tr><td>Mark Sanchez</td><td>1</td><td>4</td><td>4</td><td>3</td><td>4</td><td>5</td><td>3</td><td>24</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    
+      document.body.appendChild(modal);
+      renderEmployeeChart(chartId);
+    }
+           
+                
+           function renderEmployeeChart(containerId) {
+         const data = google.visualization.arrayToDataTable([
+              ['Employee', 'Calls'],
+              ['Mike Johnson', 60],
+              ['Cathy Thomas', 42],
+              ['Jake Lee', 49],
+              ['Bob Andersen', 19],
+              ['Brittany Lawrence', 31],
+              ['Alex Roberts', 66],
+              ['Mark Sanchez', 24],
+            ]);
+
+         const options = {
+              chartArea: { width: '85%', height: '85%' },
+              legend: { position: 'right' },
+              pieHole: 0.4,       // Makes it a donut chart
+              is3D: true,         // 3D style like your front widget
+              colors: [
+                  '#007bff', // Blue
+                  '#dc3545', // Red
+                  '#ffc107', // Yellow
+                  '#28a745', // Green
+                  '#6610f2', // Purple
+                  '#fd7e14', // Orange
+                  '#20c997'  // Teal
+                ]
+
+            };
+
+        
+          const chart = new google.visualization.PieChart(document.getElementById(containerId));
+          chart.draw(data, options);
+            }
+
+    
+    document.addEventListener('click', function (e) {
+      const icon = e.target.closest('.cvas-action-icon[data-action="magnify"]');
+      if (!icon) return;
+    
+      const widget = icon.closest('[data-widget]');
+      const widgetType = widget?.getAttribute('data-widget');
+    
+      if (!widgetType) return;
+    
+      e.preventDefault();
+      e.stopPropagation();
+    
+      console.log(`🔍 Opening modal for: ${widgetType}`);
+    
+      switch (widgetType) {
+        case 'summary':
+          cvSummaryModal();
+          break;
+        case 'inbound':
+          cvInboundModal();
+          break;
+        case 'outbound':
+          cvOutboundModal();
+          break;
+        case 'employee':
+          cvEmployeeModal();
+          break;
+        default:
+          console.warn('No modal defined for widget type:', widgetType);
+      }
+    }, true);
+
+       
+    
+        
+    // BEGIN injection
+   
+      const sidebarReady = setInterval(() => {
+        const sidebar = document.querySelector('#home-dashboards-body');
+        if (sidebar) {
+          clearInterval(sidebarReady);
+          injectSidebarButtons();
+          injectDemoWidgets(); // inject immediately on load
+        }
+      }, 300);
+    })();
+
+
+
+
+
+    
+    // ✅ MESSAGES/TEXT RESPONDER AI (Strictly scoped to /portal/messages only)
+    if (
+      window.__cvDemoMessagesInit ||
+      !/\/portal\/messages(?:[\/?#]|$)/.test(location.pathname)
+    ) {
+      //  Do nothing unless on /portal/messages and not already injected
+    } else {
+      window.__cvDemoMessagesInit = true;
+        
+      window.handleRowClick = function(index) {
+          console.log('Row clicked directly, index:', index);
+          showMessageModal(index, demoMessages);
+        };
+
+        
+
+       // === MODAL VIEW ===function viewSingleMessage(index) {
+      function viewSingleMessage(index) {
+          index = Number(index); // Ensure it's a number
+          const selected = window.demoMessages?.[index];
+          if (!selected) return console.error('Invalid index:', index);
+        
+          const container = document.querySelector('.conversation-list-table') || document.querySelector('#omp-active-body');
+          if (!container) return;
+        
+          const iframe = document.createElement('iframe');
+          iframe.id = 'cv-message-modal';
+          iframe.style.width = '100%';
+          iframe.style.height = '500px';
+          iframe.style.border = 'none';
+          iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+        
+          const cleanMessage = selected.message.replace(/\n/g, "<br>");
+         iframe.srcdoc = `
+              <html>
+                <head>
+                  <style>
+                    html, body {
+                      margin: 0;
+                      padding: 0;
+                      height: 100%;
+                      background: #fff;
+                      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    }
+            
+                    .wrapper {
+                      display: grid;
+                      grid-template-columns: 1fr 200px;
+                      grid-template-rows: auto 1fr auto;
+                      height: 100%;
+                      padding: 20px 30px;
+                      box-sizing: border-box;
+                    }
+            
+                    .view-all {
+                      grid-column: 1;
+                      grid-row: 1;
+                      align-self: start;
+                      font-size: 13px;
+                    }
+            
+                    .number {
+                      grid-column: 2;
+                      grid-row: 1;
+                      justify-self: end;
+                      font-weight: bold;
+                      font-size: 14px;
+                    }
+            
+                    .message-box {
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: flex-end;
+                      align-items: flex-start; /* Align left inside the box */
+                      padding-bottom: 60px;
+                    }
+
+            
+                    .bubble {
+                      background-color: #DFF6DD;
+                      border-radius: 10px;
+                      padding: 14px 18px;
+                      font-size: 14px;
+                      color: #000;
+                      max-width: 400px;                      
+                    }
+            
+                    .timestamp {
+                      text-align: right;
+                      font-size: 11px;
+                      color: #666;
+                      margin-top: 6px;
+                    }
+            
+                    .footer-left {
+                      grid-column: 1;
+                      grid-row: 3;
+                      font-size: 13px;
+                    }
+            
+                    .footer-right {
+                      grid-column: 2;
+                      grid-row: 3;
+                      justify-self: end;
+                      font-size: 12px;
+                      color: #888;
+                    }
+            
+                    button {
+                      padding: 4px 10px;
+                      font-size: 13px;
+                      border: 1px solid #ccc;
+                      background: #fff;
+                      border-radius: 4px;
+                      cursor: pointer;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class="wrapper">
+            
+                    <div class="view-all">
+                      <button onclick="parent.returnToMessageList()">View All</button>
+                    </div>
+            
+                    <div class="number">${selected.number || selected.sender || 'Unknown'}</div>
+            
+                    <div class="message-box">
+                      <div class="bubble">
+                        ${cleanMessage}
+                        <div class="timestamp">${selected.date} ${selected.time}</div>
+                      </div>
+                    </div>
+            
+                    <div class="footer-left">
+                      <button>Reply</button>
+                    </div>
+            
+                    <div class="footer-right">
+                      Messages sent using (248) 331-9492
+                    </div>
+            
+                  </div>
+                </body>
+              </html>
+            `;
+
+
+        
+          container.innerHTML = '';
+          container.appendChild(iframe);
+        }
+
+
+    
+
+    // === RESTORE MESSAGE LIST (force refresh) ===
+        window.returnToMessageList = function () {
+          const MSG_PATH = '/portal/messages';
+        
+          // Clean up the inline modal iframe if present (optional)
+          try { document.getElementById('cv-message-modal')?.remove(); } catch (e) {}
+        
+          // If we're not on /portal/messages, navigate there
+          if (!/\/portal\/messages(?:[\/?#]|$)/.test(location.pathname)) {
+            location.assign(MSG_PATH);
+            return;
+          }
+        
+          // We are on /portal/messages — force a full rerender
+          // (use replace so we don't clutter history)
+          location.replace(location.href);
+          // Fallback if replace is blocked:
+          // history.go(0);
+        };
+
+
+
+        
+    
+      (function injectDemoMessagesV3() {
+        const INTERVAL_MS = 500;
+        const MAX_ATTEMPTS = 20;
+        let attempt = 0;
+    
+        const safeAreaCodes = ['313', '248', '586', '734', '972', '214', '469'];
+        const cities = ['detroit', 'dallas'];                          
+       
+
+        const survey = [
+          "Please take a moment to complete our survey: www.mrservicetoday.com/survey",
+          "We value your feedback! www.mrservicetoday.com/survey",
+          "Help us improve by filling out a quick survey: www.mrservicetoday.com/survey",
+          "Your opinion matters! www.mrservicetoday.com/survey"
+        ];
+    
+        const confirmations = [
+          "Reminder: Your Mr. Service appointment is tomorrow at 9:00am.",
+          "Confirming your appointment for Friday at 1:30pm.",
+          "Your Mr. Service appointment is scheduled for Monday at 10:00am.",
+          "Appointment reminder: Wednesday at 3:00pm.",
+          "Mr. Service will see you tomorrow morning at 8:30am.",
+          "We're scheduled to visit you Friday at 2:15pm."
+        ];
+    
+        const customerReplies = [
+          "Yes, I will tell your tech when they arrive.",
+          "Thanks, I’ll be home all day.",
+          "Okay, see you then."
+        ];
+    
+        const internalMsgs = [
+          { name: "Cathy", text: "Hey Cathy, can you look at Robert's account?" },
+          { name: "Jake", text: "I see a note on that account for you. Take a look." }
+        ];
+    
+        const phoneAreaCodes = ['313','248','586','214','469','972'];
+        function randomPhone() {
+          const area = phoneAreaCodes[Math.floor(Math.random() * phoneAreaCodes.length)];
+          const prefix = '555'; // Safe demo prefix
+          const end = Math.floor(Math.random() * 9000 + 1000);
+          return `(${area}) ${prefix}-${end}`;
+        }
+    
+        function randomTime() {
+          const hour = Math.floor(Math.random() * 12) + 8;
+          const minute = Math.floor(Math.random() * 60);
+          const ampm = hour >= 12 ? 'PM' : 'AM';
+          const hour12 = hour > 12 ? hour - 12 : hour;
+          const minStr = minute < 10 ? `0${minute}` : minute;
+          return `${hour12}:${minStr} ${ampm}`;
+        }
+    
+        const today = new Date();
+        const dateOffsets = [1,1,1,2,2,2,2,4,4,4,5,5,7,7,7];
+        function formatDate(daysAgo) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - daysAgo);
+          return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+    
+        const messages = [];
+    
+        for (let i = 0; i < 4; i++) {
+          messages.push({
+            type: 'survey',
+            message: survey[i],
+            number: randomPhone(),
+            sender: null,
+            time: randomTime(),
+            date: formatDate(dateOffsets[messages.length])
+          });
+        }
+    
+        for (let i = 0; i < 6; i++) {
+          messages.push({
+            type: 'confirm',
+            message: confirmations[i],
+            number: randomPhone(),
+            sender: null,
+            time: randomTime(),
+            date: formatDate(dateOffsets[messages.length])
+          });
+        }
+    
+        for (let i = 0; i < 3; i++) {
+          messages.push({
+            type: 'reply',
+            message: customerReplies[i],
+            number: randomPhone(),
+            sender: null,
+            time: randomTime(),
+            date: formatDate(dateOffsets[messages.length])
+          });
+        }
+    
+        internalMsgs.forEach((m) => {
+          messages.push({
+            type: 'internal',
+            message: m.text,
+            number: null,
+            sender: m.name,
+            time: randomTime(),
+            date: formatDate(dateOffsets[messages.length])
+          });
+        });
+
+        window.demoMessages = messages;
+
+    
+        function buildSrcdoc(messages) {
+          const iconPhone = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/mobile-screen-button-solid-full.svg';
+          const iconUser = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/user-solid-full.svg';
+          const iconReply = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/reply-solid-full.svg';
+          const iconDelete = 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/red-x-10333.svg';
+    
+        
+        
+      const rows = window.demoMessages.map((msg, i) => {
+          const iconUrl = msg.type === 'internal' ? iconUser : iconPhone;
+          const sender = msg.type === 'internal' ? msg.sender : msg.number;
+          const preview = msg.message.replace(/\n/g, "<br>");
+        
+          return `
+            <tr onclick="parent.viewSingleMessage(${i})">
+              <td><img src="${iconUrl}" style="height:18px;" title="${msg.type === 'internal' ? 'Internal User' : 'Mobile'}"></td>
+              <td>${sender}</td>
+              <td>${preview}</td>
+              <td class="nowrap">${msg.date} ${msg.time}</td>
+              <td class="nowrap actions">
+                <span class="msg-btn iconReply"><img src="${iconReply}" title="Reply"></span>
+                <span class="msg-btn iconDelete"><img src="${iconDelete}" title="Delete"></span>
+              </td>
+            </tr>
+          `;
+        }).join("\n");
+
+    
+          return `
+            <html><head><style>
+              body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; font-size: 13px; color: #222; font-weight: 400; }
+              table { width: 100%; border-collapse: collapse; }
+              tr { background: white; }
+              tr:hover { background: #f2f2f2; cursor: pointer; }
+              td { padding: 3px 6px; border-bottom: 1px solid #ccc; vertical-align: middle; line-height: 1.1; font-size: 12px; }
+              td.nowrap { white-space: nowrap; }
+              td.actions { text-align: right; }
+              .msg-btn { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; background: #f0f0f0; border-radius: 50%; border: 1px solid #cfcfcf; cursor: pointer; }
+              .msg-btn img { width: 10px; height: 10px; opacity: 0.35; transition: opacity 0.2s ease-in-out; }
+              .msg-btn:hover img { opacity: 1; }
+            </style></head><body>
+              <table>${rows}</table>
+            </body></html>`;
+        }
+        
+       function showMessageModal(index, messages) {
+          const iframe = document.getElementById('cv-demo-messages-iframe');
+          if (!iframe) return;
+        
+          const selected = messages[index];
+          const preview = selected.message.replace(/\n/g, "<br>");
+          const icon = selected.type === 'internal'
+            ? 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/user-solid-full.svg'
+            : 'https://raw.githubusercontent.com/democlarityvoice-del/clickabledemo/refs/heads/main/mobile-screen-button-solid-full.svg';
+        
+          const modalHtml = `
+            <html><head><style>
+              body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; font-size: 13px; color: #222; font-weight: 400; padding: 10px; }
+              .msg-box { border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #f9f9f9; }
+              .from { font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+              .text { white-space: pre-wrap; margin-top: 4px; }
+              button { margin-top: 12px; padding: 6px 10px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; }
+            </style></head><body>
+              <div class="msg-box">
+                <div class="from"><img src="${icon}" style="height:16px;">${selected.type === 'internal' ? selected.sender : selected.number}</div>
+                <div class="text">${preview}</div>
+                <button onclick="parent.postMessage({ type: 'returnToList' }, '*')">Return to Message List</button>
+              </div>
+            </body></html>
+          `;
+        
+          iframe.srcdoc = modalHtml;
+        }
+        
+        
+       function inject() {
+          const container = document.querySelector('.conversation-list-table') || document.querySelector('#omp-active-body');
+          if (!container) return false;
+        
+          container.innerHTML = '';
+          const iframe = document.createElement('iframe');
+          iframe.id = 'cv-demo-messages-iframe';
+          iframe.style.width = '100%';
+          iframe.style.height = '600px';
+          iframe.style.border = 'none';
+          iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+          iframe.srcdoc = buildSrcdoc(window.demoMessages); // use global array
+          
+          container.appendChild(iframe);
+          return true;
+        }
+
+
+
+       window.addEventListener('message', (event) => {
+          if (!event.data || !event.data.type) return;
+          if (event.data.type === 'rowClick') {
+            showMessageModal(event.data.index, demoMessages);
+          } else if (event.data.type === 'returnToList') {
+            const iframe = document.getElementById('cv-demo-messages-iframe');
+            iframe.srcdoc = buildSrcdoc(window.demoMessages);
+
+          }
+        });
+
+    
+        const poll = setInterval(() => {
+          attempt++;
+          if (inject() || attempt >= MAX_ATTEMPTS) clearInterval(poll);
+        }, INTERVAL_MS);
+    
+      })(); // ✅ IIFE body closed and called
+    }
+
+    
+
 
 
 
