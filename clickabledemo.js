@@ -1810,7 +1810,7 @@ try {
   const AIFrom = cells[1]?.innerText.trim() || '—';      // assuming From is 2nd column
   const AITo = cells[5]?.innerText.trim() || '—';        // assuming To is 6th column
   const AIDuration = cells[7]?.innerText.trim() || '—';  // assuming Duration is 8th column
-  const AIDirection = cells[6]?.innerText.trim() || '—';      // assuming Date is 7th column
+  
 
 const summaryBox = document.getElementById('cv-ai-summary');
 if (summaryBox) {
