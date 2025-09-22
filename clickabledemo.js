@@ -2904,6 +2904,12 @@ tr:hover .cvq-icon{ opacity:.85; }
 .cvq-icon:focus{ outline:2px solid #0b84ff33; outline-offset:2px; }
 .cvq-icon img{ width:14px; height:14px; display:block; pointer-events:none; }
 
+/* ✅ NEW: Dark border on hover */
+.cvq-icon:hover,
+tr:hover .cvq-icon {
+  border-color: #000;
+}
+
 /* --- CVQ MODAL: CALL CENTER default hidden; open with .is-open --- */
 .cvq-modal-backdrop{
   position:fixed; inset:0; background:rgba(0,0,0,.35);
@@ -3365,16 +3371,17 @@ if (!window.__cvAgentsPanelInit) {
 
   // Agents (Bob on lunch; Mike/Brittany/Mark show phone icon)
   var AGENTS = [
-    { name:'Abbey Palmer',      ext:200, online:true,  icon:'phone' },
-    { name:'Emma Johnson',      ext:201, online:true,  icon:'user'  },
-    { name:'Liam Turner',          ext:202, online:false, icon:'user'  },
-    { name:'Mike Jones',      ext:210, online:false, icon:'user'  },
+  { name: 'Abbey Palmer',        ext: 200, status: 'busy',    icon: 'phone' },
+  { name: 'Emma Johnson',        ext: 201, status: 'online',  icon: 'user'  },
+  { name: 'Liam Turner',         ext: 202, status: 'busy',    icon: 'user'  },
+  { name: 'Mike Jones',          ext: 210, status: 'offline', icon: 'user'  },
 
-    { name:'Chad Sanders', ext:211, online:true,  icon:'phone' },
-    { name:'Isabella Martinez',      ext:212, online:true,  icon:'user'  },
-    { name:'Bob Smith',      ext:220, online:true,  icon:'phone' },
-    { name:'Ethan Moore',        ext:221, online:true,  icon:'user'  }
-  ];
+  { name: 'Chad Sanders',        ext: 211, status: 'online',  icon: 'phone' },
+  { name: 'Isabella Martinez',   ext: 212, status: 'online',  icon: 'user'  },
+  { name: 'Bob Smith',           ext: 220, status: 'online',  icon: 'phone' },
+  { name: 'Ethan Moore',         ext: 221, status: 'online',  icon: 'user'  }
+];
+
 
   // Helpers
   function pad2(n){ return ('0'+n).slice(-2); }
@@ -3444,9 +3451,14 @@ if (!window.__cvAgentsPanelInit) {
     '#',PANEL_ID,' .cv-sub-label{font:600 12px/1 Arial;color:#9aa0a6}',
     '#',PANEL_ID,' .cv-sub-time{font:600 12px/1 Arial;color:#9aa0a6}',
 
-    '#',PANEL_ID,' .is-offline .cv-glyph{background:#9ca3af}',
-    '#',PANEL_ID,' .is-offline .cv-name{color:#9aa0a6}',
-    '#',PANEL_ID,' .is-offline .cv-sub-label,#',PANEL_ID,' .is-offline .cv-sub-time{color:#b3b8bf}'
+    '#',PANEL_ID,' .is-busy    .cv-glyph{background:#dc3545}',  // red
+    '#',PANEL_ID,' .is-online  .cv-name{color:#167a32}',         // green
+    '#',PANEL_ID,' .is-busy    .cv-glyph{background:#dc3545}',  // red
+    
+    '#',PANEL_ID,' .is-online  .cv-name{color:#167a32}',         // green
+    '#',PANEL_ID,' .is-online  .cv-name{color:#167a32}',         // green
+    '#',PANEL_ID,' .is-online  .cv-name{color:#167a32}',         // green
+
   ].join('');
   s.textContent = css;
   (doc.head || doc.documentElement).appendChild(s);
