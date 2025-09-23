@@ -1809,8 +1809,8 @@ try {
   const cells = row?.children || [];
   const AIFrom = cells[1]?.innerText.trim() || '—';      // assuming From is 2nd column
   const AITo = cells[5]?.innerText.trim() || '—';        // assuming To is 6th column
-  const AIDuration = cells[7]?.innerText.trim() || '—';  // assuming Duration is 8th column
-  
+  const AIDuration = cells[8]?.innerText.trim() || '—';  // assuming Duration is 9th column
+  const AIDirection = cells[7]?.innerText.trim() || '—';      // assuming Date is 7th column
 
 const summaryBox = document.getElementById('cv-ai-summary');
 if (summaryBox) {
@@ -1831,13 +1831,11 @@ if (summaryBox) {
     const chips = chipWrap.querySelectorAll('span');
     chips[0].textContent = 'From: ' + AIFrom;
     chips[1].textContent = 'To: ' + AITo;
-    chips[2].textContent = '⏱ ' + AIDuration;
+    chips[2].textContent = '⏱ ' + AIDuration; 
     chips[3].textContent = '📅 ' + AIDate;
   }
   
-// ---- New: Simulated Transcript Injection ----
 
-  // ---- New: Simulated Transcript Injection ----
 
 // ---- New: Simulated Transcript Injection ----
 
