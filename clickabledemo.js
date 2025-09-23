@@ -1,5 +1,5 @@
   // ==============================
-// Clarity Voice Demo Calls Inject (HOME) Includes Rotating Calls, Injected Stats, and Graph
+// Clarity Voice Demo Calls Inject (HOME) Includes Rotating Calls, Injected Stats, and Graph 
 // ==============================
 if (!window.__cvDemoInit) {
   window.__cvDemoInit = true;
