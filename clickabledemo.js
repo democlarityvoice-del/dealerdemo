@@ -2808,7 +2808,7 @@ if (!window.__cvQueuesTilesInit) {
   }
 
   // ---- CACHES FOR CALL CENTER MODAL ROWS (stable while open) ----
-  const REAL_DIDS      = ['(248) 436-3443','(248) 436-3449','(313) 995-9080'];
+  const REAL_DIDS      = ['(947) 282-2640','(947) 282-2641','(947) 282-2642'];
   const SAFE_FAKE_AC   = ['900','700','999','888','511','600','311','322','456'];
   const AGENT_EXT_POOL = [201,203,204,207,211,215,218,219,222,227,231,235];
   const CVQ_CACHE      = { active:{}, waiting:{} };
