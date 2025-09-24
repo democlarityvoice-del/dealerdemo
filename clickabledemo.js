@@ -1255,12 +1255,12 @@ const rows = [
       var tr = document.createElement('tr');
       var dateStr = fmtToday(cursor);
 
-var iconsHTML = ICONS.map(function(icon){
-  var cls = icon.circle ? 'icon-btn' : 'icon-btn icon-btn--plain';
-  // For cradle buttons, add data-ctg from the row
-  var extra = (icon.key === "cradle") ? ' data-ctg="'+row.ctgType+'"' : '';
-  return '<button class="'+cls+'" data-action="'+icon.key+'"'+extra+' title="'+icon.title+'"><img src="'+icon.src+'" alt=""/></button>';
-}).join('');
+  var iconsHTML = ICONS.map(function(icon){
+    var cls = icon.circle ? 'icon-btn' : 'icon-btn icon-btn--plain';
+    // For cradle buttons, add data-ctg from the row
+    var extra = (icon.key === "cradle") ? ' data-ctg="'+row.ctgType+'"' : '';
+    return '<button class="'+cls+'" data-action="'+icon.key+'"'+extra+' title="'+icon.title+'"><img src="'+icon.src+'" alt=""/></button>';
+  }).join('');
 
 
       tr.innerHTML =
@@ -1918,7 +1918,7 @@ var fakeOutboundSummary =
     segList.innerHTML = '';
   
     // ✅ Determine correct direction from rows[idx]
-    const direction = rows?.[idx]?.ctgType || 'inbound';
+    const direction = row?.ctgType || 'inbound';
     const script = direction === 'inbound' ? fakeInbound : fakeOutbound;
   
     const summaryEl = document.getElementById('cv-ai-summary');
@@ -1928,10 +1928,10 @@ var fakeOutboundSummary =
 
 
 
-script.forEach(function (seg) {
-  var el = document.createElement('div');
-  el.className = 'cv-ai-segment';
-  el.dataset.start = seg.start;
+    script.forEach(function (seg) {
+      var el = document.createElement('div');
+      el.className = 'cv-ai-segment';
+      el.dataset.start = seg.start;
 
   // === Container styling ===
   el.style.display = 'flex';
