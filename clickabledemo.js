@@ -1913,20 +1913,19 @@ var fakeOutboundSummary =
   const segList = document.getElementById('cv-ai-seglist');
   const durationDisplay = document.getElementById('cv-ai-fakeduration');
 
-    
   if (segList && durationDisplay) {
     segList.innerHTML = '';
   
     // ✅ Determine correct direction from rows[idx]
-    const direction = row?.ctgType || 'inbound';
+    const direction = rows?.[idx]?.ctgType || 'inbound';
     const script = direction === 'inbound' ? fakeInbound : fakeOutbound;
   
     const summaryEl = document.getElementById('cv-ai-summary');
     if (summaryEl) {
       summaryEl.textContent = direction === 'inbound' ? fakeInboundSummary : fakeOutboundSummary;
     }
-
-
+    
+ 
 
     script.forEach(function (seg) {
       var el = document.createElement('div');
